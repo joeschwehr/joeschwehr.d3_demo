@@ -1,0 +1,103 @@
+body {
+    color: black;
+    /* background: linear-gradient(90deg, rgba(11, 66, 163, 1) 0%, rgba(8, 181, 215, 1) 100%); */
+}
+
+svg {
+    /* background-color: white; */
+    border: 0.5px solid rgb(236, 236, 236);
+}
+
+#chart-area svg {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+#logo {
+    height: 50px;
+}
+
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+
+.navbar-brand {
+    height: 60px;
+    padding: 5px 0px;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-brand span {
+    color: rgb(149, 178, 197);
+    font-weight: 300;
+    letter-spacing: 0.2rem;
+    font-size: 1.1rem;
+    line-height: 1.25rem;
+}
+
+/* rows */
+
+.row-one {
+    margin-top: 100px;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+}
+
+.row-two,
+.row-three,
+.row-four {
+    margin-top: 50px;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+}
+
+/* gradient */
+.stop-left {
+    /* stop-color: #1a518f; Indigo */
+    stop-color: #1b69c4; /* Teal */
+}
+
+.stop-right {
+    stop-color: #1b69c4; /* Teal */
+}
+
+.filled {
+    fill: url(#mainGradient);
+}
+
+/* plot 2 */
+.svg-two {
+    margin: 0 auto;
+    display: block;
+}
+
+.input-slider {
+    width: 400px;
+    margin: 20px auto 0;
+    display: flex;
+    justify-content: center;
+}
+
+.input-slider input {
+    width: 200px;
+    margin-right: 15px;
+    margin-bottom: 8px;
+}
+
+.bin-count {
+    text-align: center;
+}
+
+/* plot 3 */
+
+/* plot 4 */
+.svg-four .tick line {
+    stroke: rgb(240, 240, 240);
+    stroke-dasharray: 15, 5;
+}

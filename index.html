@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="description" content="" />
+        <title>2020 Outlook</title>
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="css/bootstrap.min.css" />
+        <!-- Custom styling -->
+        <link rel="stylesheet" href="css/style.css" />
+    </head>
+
+    <body>
+        <nav class="navbar navbar-default">
+            <div class="container">
+                <a class="navbar-brand" href="#"
+                    ><img id="logo" src="img/logo2.png" /><span>CAPTIAL<br />GROWTH</span></a
+                >
+            </div>
+        </nav>
+
+        <!-- Bootstrap grid setup -->
+        <div class="container">
+            <div class="row row-one">
+                <div id="gapminder"></div>
+            </div>
+            <hr />
+            <div class="row row-two">
+                <div id="chart-area"></div>
+            </div>
+            <hr />
+            <div class="row row-two">
+                <svg
+                    class="svg-two"
+                    version="1.1"
+                    baseProfile="full"
+                    xmlns="http://www.w3.org/2000/svg"
+                ></svg>
+                <div class="input-slider">
+                    <input type="range" min="1" max="50" step="1" />
+                    <p class="bin-count"></p>
+                </div>
+            </div>
+            <hr />
+            <div class="row row-three">
+                <svg
+                    class="svg-three"
+                    version="1.1"
+                    baseProfile="full"
+                    xmlns="http://www.w3.org/2000/svg"
+                ></svg>
+                <div class="input-slider">
+                    <input id="month-input" type="range" step="1" />
+                </div>
+            </div>
+            <hr />
+            <div class="row row-four">
+                <svg
+                    class="svg-four"
+                    version="1.1"
+                    baseProfile="full"
+                    xmlns="http://www.w3.org/2000/svg"
+                ></svg>
+            </div>
+            <hr />
+        </div>
+
+        <!-- External JS libraries -->
+        <script src="js/d3.min.js"></script>
+        <!-- Custom JS -->
+        <script src="js/main.js"></script>
+        <script src="https://d3js.org/d3.v4.js"></script>
+        <script src="plots/gapminder/data/data.js"></script>
+        <script src="plots/gapminder/js/main.js"></script>
+        <script src="plots/histogram-exercise/regionData.js"></script>
+        <script src="plots/histogram-exercise/app.js"></script>
+        <script src="plots/d3-and-svg/birthData.js"></script>
+        <script src="plots/d3-and-svg/app.js"></script>
+        <script src="plots/scatterplot-exercise/regionData.js"></script>
+        <script src="plots/scatterplot-exercise/app.js"></script>
+    </body>
+</html>
