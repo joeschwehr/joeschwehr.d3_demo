@@ -67,7 +67,11 @@ const interactiveHist = regionData => {
                 .attr('x', d => xScale(d.x0))
                 .attr('y', d => yScale(d.length))
                 .attr('height', d => height - padding - yScale(d.length))
-                .attr('width', d => xScale(d.x1) - xScale(d.x0) - barPadding)
+                .attr('width', d =>
+                    xScale(d.x1) - xScale(d.x0) - barPadding < 0
+                        ? xScale(d.x1) - xScale(d.x0)
+                        : xScale(d.x1) - xScale(d.x0) - barPadding
+                )
                 .attr('fill', '#1b69c4');
 
             d3.select('.bin-count').text(`Number of bins: ${bins.length}`);
