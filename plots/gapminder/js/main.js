@@ -7,6 +7,7 @@ const gapMinder = gapData => {
     const HEIGHT = 550;
     const MARGIN = { top: 50, right: 20, bottom: 40, left: 60 };
 
+    // SET UP SVG with GROUP FOR OUR PLOT
     const gfx = d3
         .select('#gapminder')
         .append('svg')
@@ -14,6 +15,14 @@ const gapMinder = gapData => {
         .attr('height', HEIGHT + MARGIN.top + MARGIN.bottom)
         .append('g')
         .attr('transform', `translate(${MARGIN.left}, ${MARGIN.top})`);
+
+    // TOOLTIP
+    const tip = d3
+        .tip()
+        .attr('class', 'd3-tip')
+        .html(d => d);
+
+    gfx.call(tip);
 
     const colorScale = d3
         .scaleOrdinal()
@@ -174,7 +183,6 @@ const updateGapMinder = (data, yearText, yearIndex, gfx, yScale, xScale, rScale,
     // UPDATE YEAR
     yearText.text(data[yearIndex].year);
 
-    const yearValue = data[yearIndex].year;
     return yearIndex;
 };
 
