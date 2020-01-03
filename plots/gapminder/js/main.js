@@ -144,7 +144,7 @@ const updateGapMinder = (data, yearText, yearIndex, gfx, yScale, xScale, rScale,
     }
 
     // Standard transition time for the visualization
-    var t = d3.transition().duration(50);
+    const t = d3.transition().duration(50);
 
     // JOIN
     let newData = gfx.selectAll('circle').data(data[yearIndex].countries);
