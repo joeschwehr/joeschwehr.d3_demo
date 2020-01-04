@@ -29,7 +29,7 @@ const interactiveHist = regionData => {
         .attr('width', width)
         .attr('height', height);
 
-    d3.select('input')
+    d3.select('#hist-bins-slider')
         .property('value', bins.length)
         .on('input', () => {
             const binCount = +d3.event.target.value;
