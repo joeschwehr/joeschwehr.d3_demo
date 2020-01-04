@@ -1,21 +1,37 @@
+:root {
+    --tip-bg-color: rgba(223, 223, 223, 0.8);
+}
+
 .d3-tip {
-    line-height: 1;
-    font-weight: bold;
+    font-weight: normal;
     padding: 12px;
-    background: rgba(0, 0, 0, 0.8);
-    color: #fff;
+    background: var(--tip-bg-color);
+    color: rgb(87, 87, 87);
     border-radius: 2px;
     pointer-events: none;
+    font-size: 1.8rem;
+}
+
+.d3-tip h4 {
+    margin-top: 0;
+    margin-bottom: -2rem;
+    font-size: 2.2rem;
+}
+
+.d3-tip span {
+    font-size: 1.1rem;
+    letter-spacing: 0.1px;
+    font-weight: 300;
 }
 
 /* Creates a small triangle extender for the tooltip */
 .d3-tip:after {
+    width: 100%;
     box-sizing: border-box;
     display: inline;
-    font-size: 10px;
-    /* width: 100%; */
-    line-height: 1;
-    color: rgba(0, 0, 0, 0.8);
+    font-size: 15px;
+    line-height: 0.5;
+    color: var(--tip-bg-color);
     position: absolute;
     pointer-events: none;
 }

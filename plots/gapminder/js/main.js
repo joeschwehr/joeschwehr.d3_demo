@@ -16,14 +16,6 @@ const gapMinder = gapData => {
         .append('g')
         .attr('transform', `translate(${MARGIN.left}, ${MARGIN.top})`);
 
-    // TOOLTIP
-    const tip = d3
-        .tip()
-        .attr('class', 'd3-tip')
-        .html(d => d);
-
-    gfx.call(tip);
-
     const colorScale = d3
         .scaleOrdinal()
         .domain(d3.extent(countries, d => d.continent))
@@ -44,16 +36,6 @@ const gapMinder = gapData => {
         .scaleLinear()
         .domain([2000, 1400000000])
         .range([1.5 * Math.PI, 30 * Math.PI]);
-
-    gfx.selectAll('circle')
-        .data(data[yearIndex].countries)
-        .enter()
-        .append('circle')
-        .attr('cy', d => yScale(d.life_exp))
-        .attr('cx', d => xScale(d.income))
-        .attr('r', d => rScale(d.population))
-        .attr('fill', d => colorScale(d.continent))
-        .attr('stroke', 'rgba(255,255,255,.3)');
 
     // X AXIS
     const xAxis = d3
@@ -131,7 +113,97 @@ const gapMinder = gapData => {
         .attr('font-size', '4rem')
         .text(yearValue);
 
-    d3.interval(function() {
+    // TOOLTIP
+    const tip = d3
+        .tip()
+        .attr('class', 'd3-tip')
+        .html(d => {
+            const text = `<p><h4> ${d.country}</h4><br>
+                ${d3.format('$,.0f')(d.income)} <span>income per person</span><br>
+                ${d3.format('.2f')(d.life_exp)} <span>years</span><br>
+                ${d3.format(',')(d.population)} <span>population</span></p>`;
+            return text;
+        });
+
+    gfx.call(tip);
+
+    // Draws first vis
+    yearIndex = updateGapMinder(
+        data,
+        yearText,
+        yearIndex,
+        gfx,
+        yScale,
+        xScale,
+        rScale,
+        colorScale,
+        tip
+    );
+
+    // YEAR SLIDER
+    let yearInput = d3.select('.year-input');
+    setTimeout(() => (yearInput.node().value = 0), 200); //this is total bush league
+
+    yearInput.on('change', () => {
+        const sliderValue = d3.event.target.value;
+        yearIndex = +sliderValue;
+
+        // if paused, update animation
+        if (!isRunning) {
+            yearIndex = updateGapMinder(
+                data,
+                yearText,
+                yearIndex,
+                gfx,
+                yScale,
+                xScale,
+                rScale,
+                colorScale,
+                tip
+            );
+        }
+    });
+
+    // PLAY BUTTON
+    let isRunning = false;
+    const playBtn = d3.select('.play-pause');
+    let interval = null;
+
+    playBtn.on('click', () => {
+        isRunning = !isRunning;
+        if (isRunning) {
+            playBtn.text('pause');
+            // Animates Vis
+            interval = setInterval(() => {
+                yearIndex = step(
+                    data,
+                    yearText,
+                    yearIndex,
+                    gfx,
+                    yScale,
+                    xScale,
+                    rScale,
+                    colorScale,
+                    tip
+                );
+                yearInput.node().value = yearIndex;
+            }, 100);
+        } else {
+            playBtn.text('play');
+            clearInterval(interval);
+        }
+    });
+
+    // RESET BUTTON
+    const resetBtn = d3.select('.reset');
+    resetBtn.on('click', () => {
+        yearIndex = 0;
+        clearInterval(interval);
+        isRunning = false;
+        playBtn.text('play');
+        yearInput.node().value = yearIndex;
+
+        // if paused, update animation
         yearIndex = updateGapMinder(
             data,
             yearText,
@@ -140,23 +212,76 @@ const gapMinder = gapData => {
             yScale,
             xScale,
             rScale,
-            colorScale
+            colorScale,
+            tip
         );
-    }, 100);
+    });
+
+    // SELECTION FILTER
+    const selectedContinent = d3.select('#continent-selector');
+    selectedContinent.on('change', () => {
+        if (!isRunning) {
+            yearIndex = updateGapMinder(
+                data,
+                yearText,
+                yearIndex,
+                gfx,
+                yScale,
+                xScale,
+                rScale,
+                colorScale,
+                tip
+            );
+        }
+    });
 };
 
-const updateGapMinder = (data, yearText, yearIndex, gfx, yScale, xScale, rScale, colorScale) => {
-    if (yearIndex + 1 < data.length) {
-        yearIndex += 1;
-    } else {
-        yearIndex = 0;
-    }
+const step = (data, yearText, yearIndex, gfx, yScale, xScale, rScale, colorScale, tip) => {
+    // RESTARTS ANIMATION to year 1800
+    yearIndex + 1 < data.length ? (yearIndex += 1) : (yearIndex = 0);
 
+    yearIndex = updateGapMinder(
+        data,
+        yearText,
+        yearIndex,
+        gfx,
+        yScale,
+        xScale,
+        rScale,
+        colorScale,
+        tip
+    );
+
+    return yearIndex;
+};
+
+const updateGapMinder = (
+    data,
+    yearText,
+    yearIndex,
+    gfx,
+    yScale,
+    xScale,
+    rScale,
+    colorScale,
+    tip
+) => {
     // Standard transition time for the visualization
     const t = d3.transition().duration(50);
 
+    // Filter based on selection box
+    const selectedContinent = d3.select('#continent-selector').node().value;
+
+    let filteredData = data[yearIndex].countries;
+
+    if (selectedContinent !== 'All') {
+        filteredData = filteredData.filter(d => {
+            return d.continent === selectedContinent.toLowerCase();
+        });
+    }
+
     // JOIN
-    let newData = gfx.selectAll('circle').data(data[yearIndex].countries);
+    let newData = gfx.selectAll('circle').data(filteredData);
 
     // EXIT
     newData.exit().remove();
@@ -178,7 +303,9 @@ const updateGapMinder = (data, yearText, yearIndex, gfx, yScale, xScale, rScale,
         .attr('stroke', 'rgba(255,255,255,.3)')
         .attr('cy', d => yScale(d.life_exp))
         .attr('cx', d => xScale(d.income))
-        .attr('r', d => rScale(d.population));
+        .attr('r', d => rScale(d.population))
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide);
 
     // UPDATE YEAR
     yearText.text(data[yearIndex].year);

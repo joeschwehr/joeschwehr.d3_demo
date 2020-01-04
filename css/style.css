@@ -42,7 +42,7 @@ svg {
 /* rows */
 
 .row-one {
-    margin-top: 100px;
+    margin-top: 80px;
     display: flex;
     flex-flow: column;
     align-items: center;
@@ -69,6 +69,53 @@ svg {
 
 .filled {
     fill: url(#mainGradient);
+}
+
+/* plot 1 */
+.buttons {
+    margin: 0 0 10px 0;
+}
+
+.buttons button {
+    background-color: #1b69c4;
+    color: white;
+    outline: none;
+    border: none;
+    padding: 5px;
+    width: 120px;
+    margin-right: 5px;
+    transition: all 0.4s;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.2rem;
+    font-size: 1rem;
+}
+
+.buttons button:hover {
+    background-color: #13539c;
+}
+
+select {
+    width: 120px;
+    outline-color: rgb(240, 240, 240);
+}
+
+.gapminder-header {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.gapminder-slider {
+    width: 20%;
+}
+.gapminder-slider input {
+    margin: 4px 0 0 10px;
+    width: 100%;
+}
+input:focus {
+    outline-color: rgb(240, 240, 240);
+    outline: none;
 }
 
 /* plot 2 */

@@ -23,6 +23,29 @@
         <!-- Bootstrap grid setup -->
         <div class="container">
             <div class="row row-one">
+                <div class="gapminder-header">
+                    <div class="buttons">
+                        <button class="play-pause">Play</button>
+                        <button class="reset">Reset</button>
+                        <select id="continent-selector">
+                            <option value="All">All</option>
+                            <option value="Africa">Africa</option>
+                            <option value="Americas">Americas</option>
+                            <option value="Asia">Asia</option>
+                            <option value="Europe">Europe</option>
+                        </select>
+                    </div>
+                    <div class="gapminder-slider">
+                        <input
+                            type="range"
+                            min="0"
+                            max="214"
+                            value="0"
+                            class="year-input"
+                            step="1"
+                        />
+                    </div>
+                </div>
                 <div id="gapminder"></div>
             </div>
             <hr />
