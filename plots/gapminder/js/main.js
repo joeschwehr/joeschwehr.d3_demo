@@ -142,7 +142,6 @@ const gapMinder = gapData => {
 
     // YEAR SLIDER
     let yearInput = d3.select('.year-input');
-    setTimeout(() => (yearInput.node().value = 0), 200); //this is total bush league
 
     yearInput.on('change', () => {
         const sliderValue = d3.event.target.value;
