@@ -29,15 +29,7 @@ const coinstats = data => {
 
     // Axis generators
     let xAxisCall = d3.axisBottom();
-    let yAxisCall = d3
-        .axisLeft()
-        .ticks(6)
-        .tickFormat(d => {
-            if (coinSelectorValue === 'bitcoin') {
-                return parseInt(d / 1000) + 'k';
-            }
-            return d;
-        });
+    let yAxisCall = d3.axisLeft().ticks(6);
 
     // Axis groups
     let xAxis = g
@@ -114,6 +106,23 @@ const coinstats = data => {
     //transition speed
     const t = () => d3.transition().duration(1000);
 
+    // Fix for format values
+    let formatSi = d3.format('.2s');
+    function formatAbbreviation(x) {
+        let s = formatSi(x);
+
+        // checks last character of formatted output
+        switch (s[s.length - 1]) {
+            case 'G':
+                return s.slice(0, -1) + 'B'; //removes last character and replaces it with 'B'
+            case 'k':
+                return s.slice(0, -1) + 'K';
+            case 'm':
+                return x;
+        }
+        return s;
+    }
+
     function update() {
         // Set scale domains
         // rescale horizontally (and narrows data down by date range)
@@ -130,7 +139,8 @@ const coinstats = data => {
 
         // Generate axes once scales have been set
         xAxis.transition(t()).call(xAxisCall.scale(x));
-        yAxis.transition(t()).call(yAxisCall.scale(y));
+        yAxisCall.scale(y);
+        yAxis.transition(t()).call(yAxisCall.tickFormat(formatAbbreviation));
 
         // Redraws Line
         g.select('.btc-line')
@@ -180,6 +190,8 @@ const coinstats = data => {
         })
         .on('mousemove', mousemove);
 
+    let formatOutput = d3.format(',.2f');
+
     function mousemove() {
         let x0 = x.invert(d3.mouse(this)[0]),
             i = bisectDate(data[coinSelectorValue], x0, 1),
@@ -191,7 +203,9 @@ const coinstats = data => {
             .style('opacity', 1)
             .style('left', `${d3.event.x + 23}px`)
             .style('top', `${y(d[varSelectorValue]) + 150}px`)
-            .html(`<h4>${d[varSelectorValue]}</h4><span>${formatTime(d.date)}</span>`);
+            .html(
+                `<h4>$${formatOutput(d[varSelectorValue])}</h4><span>${formatTime(d.date)}</span>`
+            );
 
         focus.attr('transform', `translate(${x(d.date)}, ${y(d[varSelectorValue])})`);
         focus.select('.x-hover-line').attr('y2', HEIGHT - y(d[varSelectorValue]));

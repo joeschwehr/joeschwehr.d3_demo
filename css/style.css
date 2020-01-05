@@ -87,11 +87,17 @@ svg {
     justify-content: center;
 }
 
+#slider-div label {
+    padding: 0 40px;
+    margin-top: -2px;
+}
+
 #slider-div {
     display: flex;
     flex-flow: column;
     align-items: center;
     margin: 0 20px 0 20px;
+    width: max-content;
 }
 
 #date-slider {
@@ -100,6 +106,7 @@ svg {
     width: 100%;
     transform: scale(1);
     transform-origin: 50% 0;
+    margin-top: -2px;
 }
 
 .form-control {
@@ -159,9 +166,9 @@ svg {
 }
 
 .btc-hover-line {
-    stroke: rgba(119, 119, 119, 0.589);
+    stroke: rgba(119, 119, 119, 0.3);
     stroke-width: 1px;
-    stroke-dasharray: 3, 3;
+    stroke-dasharray: 5, 3;
 }
 
 .btc-line {
