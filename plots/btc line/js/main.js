@@ -202,7 +202,7 @@ const coinstats = data => {
         toolTipInfoBox
             .style('opacity', 1)
             .style('left', `${d3.event.x + 23}px`)
-            .style('top', `${y(d[varSelectorValue]) + 150}px`)
+            .style('top', `${y(d[varSelectorValue]) + 129}px`)
             .html(
                 `<h4>$${formatOutput(d[varSelectorValue])}</h4><span>${formatTime(d.date)}</span>`
             );
