@@ -1,3 +1,7 @@
+:root {
+    --brand-color: #1b69c4;
+}
+
 body {
     color: black;
     /* background: linear-gradient(90deg, rgba(11, 66, 163, 1) 0%, rgba(8, 181, 215, 1) 100%); */
@@ -174,7 +178,7 @@ svg {
 .btc-line {
     fill: none;
     stroke-width: 1.5px;
-    stroke: grey;
+    stroke: rgb(54, 106, 167);
 }
 
 /* plot Gapminder ****************************************/

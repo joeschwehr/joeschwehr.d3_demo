@@ -1,5 +1,5 @@
 const coinstats = data => {
-    const MARGIN = { left: 80, right: 80, top: 50, bottom: 100 },
+    const MARGIN = { left: 80, right: 80, top: 30, bottom: 40 },
         HEIGHT = 600 - MARGIN.top - MARGIN.bottom,
         WIDTH = 900 - MARGIN.left - MARGIN.right;
 
