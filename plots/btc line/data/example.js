@@ -1,0 +1,13 @@
+const example = [
+    { date: '2005', price_usd: 771900 },
+    { date: '2006', price_usd: 771500 },
+    { date: '2007', price_usd: 770500 },
+    { date: '2008', price_usd: 770400 },
+    { date: '2009', price_usd: 771000 },
+    { date: '2010', price_usd: 772400 },
+    { date: '2011', price_usd: 774100 },
+    { date: '2012', price_usd: 776700 },
+    { date: '2013', price_usd: 777100 },
+    { date: '2014', price_usd: 779200 },
+    { date: '2015', price_usd: 782300 }
+];

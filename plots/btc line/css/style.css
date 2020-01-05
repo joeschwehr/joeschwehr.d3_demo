@@ -1,0 +1,49 @@
+#btc-chart-area svg {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+#logo {
+    height: 50px;
+}
+
+.btc-axis {
+    font: 10px sans-serif;
+}
+
+.btc-axis path,
+.btc-axis line {
+    fill: none;
+    stroke: #d4d8da;
+    stroke-width: 2px;
+    shape-rendering: crispEdges;
+}
+
+.btc-overlay {
+    fill: none;
+    pointer-events: all;
+}
+
+.btc-focus circle {
+    fill: #f1f3f3;
+    stroke: #777;
+    stroke-width: 3px;
+}
+
+.btc-hover-line {
+    stroke: #777;
+    stroke-width: 2px;
+    stroke-dasharray: 3, 3;
+}
+
+#btc-selections .col-md-4 {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.btc-line {
+    fill: none;
+    stroke-width: 3px;
+    stroke: grey;
+}

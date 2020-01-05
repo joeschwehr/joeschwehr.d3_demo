@@ -265,8 +265,10 @@ const updateGapMinder = (
     colorScale,
     tip
 ) => {
-    // Standard transition time for the visualization
+    // // Standard transition time for the visualization
     const t = d3.transition().duration(50);
+    //transition speed
+    // const t = () => d3.transition().duration(50);
 
     // Filter based on selection box
     const selectedContinent = d3.select('#continent-selector').node().value;

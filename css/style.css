@@ -22,6 +22,7 @@ svg {
     position: fixed;
     top: 0;
     width: 100%;
+    z-index: 10;
 }
 
 .navbar-brand {
@@ -42,7 +43,7 @@ svg {
 /* rows */
 
 .row-one {
-    margin-top: 80px;
+    margin-top: 70px;
     display: flex;
     flex-flow: column;
     align-items: center;
@@ -71,9 +72,80 @@ svg {
     fill: url(#mainGradient);
 }
 
-/* plot 1 */
+/* btc plot styles ******************************/
+
+#btc-chart-area svg {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+#btc-selections {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+#slider-div {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    margin: 0 20px 0 20px;
+}
+
+#date-slider {
+    /* width: -moz-max-content;
+    width: max-content; */
+    width: 100%;
+    transform: scale(1);
+    transform-origin: 50% 0;
+}
+
+.form-control {
+    width: 200px;
+    margin-right: 10px;
+}
+
+.btc-axis {
+    font: 10px sans-serif;
+}
+
+.btc-axis path,
+.btc-axis line {
+    fill: none;
+    stroke: #d4d8da;
+    stroke-width: 1px;
+    shape-rendering: crispEdges;
+}
+
+.btc-overlay {
+    fill: none;
+    pointer-events: all;
+}
+
+.btc-focus circle {
+    fill: #f1f3f3;
+    stroke: #777;
+    stroke-width: 3px;
+}
+
+.btc-hover-line {
+    stroke: rgba(119, 119, 119, 0.589);
+    stroke-width: 1px;
+    stroke-dasharray: 3, 3;
+}
+
+.btc-line {
+    fill: none;
+    stroke-width: 3px;
+    stroke: grey;
+}
+
+/* plot Gapminder ****************************************/
 .buttons {
     margin: 0 0 10px 0;
+    display: flex;
 }
 
 .buttons button {
@@ -95,7 +167,7 @@ svg {
     background-color: #13539c;
 }
 
-select {
+#continent-selector {
     width: 120px;
     outline-color: rgb(240, 240, 240);
 }
@@ -108,9 +180,11 @@ select {
 
 .gapminder-slider {
     width: 20%;
+    display: flex;
+    align-items: center;
 }
 .gapminder-slider input {
-    margin: 4px 0 0 10px;
+    margin: 0 0 10px 10px;
     width: 100%;
 }
 input:focus {
@@ -118,7 +192,7 @@ input:focus {
     outline: none;
 }
 
-/* plot 2 */
+/* plot 3 */
 .svg-two {
     margin: 0 auto;
     display: block;
@@ -143,7 +217,7 @@ input:focus {
 
 /* plot 3 */
 
-/* plot 4 */
+/* Scatter Plot */
 .svg-four .tick line {
     stroke: rgb(240, 240, 240);
     stroke-dasharray: 15, 5;
