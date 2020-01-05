@@ -124,6 +124,34 @@ svg {
     pointer-events: all;
 }
 
+.btc-tooltip-info {
+    opacity: 0;
+    position: absolute;
+    background-color: rgba(222, 222, 222, 0.7);
+    width: max-content;
+    height: 55px;
+    padding: 0 10px;
+    line-height: 0;
+    color: rgb(58, 58, 58);
+    border-radius: 4px;
+}
+/* Westward tooltips */
+.btc-tooltip-info:before {
+    width: 100%;
+    box-sizing: border-box;
+    display: inline;
+    font-size: 15px;
+    line-height: 0.5;
+    color: rgba(222, 222, 222, 0.5);
+    position: absolute;
+    pointer-events: none;
+
+    content: '\25C0';
+    margin: -4px 0 0 0;
+    top: 27px;
+    left: -12px;
+}
+
 .btc-focus circle {
     fill: #f1f3f3;
     stroke: #777;
@@ -138,7 +166,7 @@ svg {
 
 .btc-line {
     fill: none;
-    stroke-width: 3px;
+    stroke-width: 1.5px;
     stroke: grey;
 }
 

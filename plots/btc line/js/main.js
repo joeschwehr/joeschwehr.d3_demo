@@ -1,7 +1,7 @@
 const coinstats = data => {
-    const MARGIN = { left: 80, right: 100, top: 50, bottom: 100 },
+    const MARGIN = { left: 80, right: 80, top: 50, bottom: 100 },
         HEIGHT = 600 - MARGIN.top - MARGIN.bottom,
-        WIDTH = 800 - MARGIN.left - MARGIN.right;
+        WIDTH = 900 - MARGIN.left - MARGIN.right;
 
     let svg = d3
         .select('#btc-chart-area')
@@ -162,10 +162,10 @@ const coinstats = data => {
 
     focus.append('circle').attr('r', 7.5);
 
-    focus
-        .append('text')
-        .attr('x', 15)
-        .attr('dy', '.31em');
+    let toolTipInfoBox = d3
+        .select('body')
+        .append('div')
+        .attr('class', 'btc-tooltip-info');
 
     g.append('rect')
         .attr('class', 'btc-overlay')
@@ -175,6 +175,7 @@ const coinstats = data => {
             focus.style('display', null);
         })
         .on('mouseout', function() {
+            toolTipInfoBox.style('opacity', 0);
             focus.style('display', 'none');
         })
         .on('mousemove', mousemove);
@@ -185,8 +186,14 @@ const coinstats = data => {
             d0 = data[coinSelectorValue][i - 1],
             d1 = data[coinSelectorValue][i],
             d = x0 - d0.date > d1.date - x0 ? d1 : d0;
-        focus.attr('transform', 'translate(' + x(d.date) + ',' + y(d[varSelectorValue]) + ')');
-        focus.select('text').text(`${d[varSelectorValue]} (${formatTime(d.date)})`);
+
+        toolTipInfoBox
+            .style('opacity', 1)
+            .style('left', `${d3.event.x + 23}px`)
+            .style('top', `${y(d[varSelectorValue]) + 150}px`)
+            .html(`<h4>${d[varSelectorValue]}</h4><span>${formatTime(d.date)}</span>`);
+
+        focus.attr('transform', `translate(${x(d.date)}, ${y(d[varSelectorValue])})`);
         focus.select('.x-hover-line').attr('y2', HEIGHT - y(d[varSelectorValue]));
         focus.select('.y-hover-line').attr('x2', -x(d.date));
     }
