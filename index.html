@@ -18,9 +18,14 @@
     <body>
         <nav class="navbar navbar-default">
             <div class="container">
-                <a class="navbar-brand" href="#"
+                <a class="navbar-brand" href="index.html"
                     ><img id="logo" src="img/logo2.png" /><span>CAPTIAL<br />GROWTH</span></a
                 >
+                <!-- <div class="nav-links">
+                    <a href="#" class="nav-link">Dashboard 1</a>
+                    <a href="#" class="nav-link">Dashboard 2</a>
+                    <a href="#" class="nav-link">Other s</a>
+                </div> -->
             </div>
         </nav>
 
@@ -41,8 +46,8 @@
                 <div class="">
                     <select id="coin-select" class="form-control">
                         <option selected value="bitcoin">Bitcoin</option>
-                        <option value="ethereum">Ethereum</option>
                         <option value="bitcoin_cash">Bitcoin Cash</option>
+                        <option value="ethereum">Ethereum</option>
                         <option value="litecoin">Litecoin</option>
                         <option value="ripple">Ripple</option>
                     </select>
@@ -55,9 +60,13 @@
                     </select>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-12">
+            <div class="btc-charts">
+                <div class="btc-line-chart">
                     <div id="btc-chart-area"></div>
+                </div>
+                <div class="btc-donut-charts">
+                    <svg id="donut1" class="pie-svg"></svg>
+                    <svg id="donut2" class="pie-svg"></svg>
                 </div>
             </div>
             <hr />
@@ -131,24 +140,37 @@
         </div>
 
         <!-- External JS libraries -->
-        <!-- <script src="node_modules/d3/dist/d3.min.js"></script> -->
         <script src="https://d3js.org/d3.v5.min.js"></script>
         <script src="plots/gapminder/js/d3tooltip.js"></script>
         <script src="plots/btc line/js/jquery.min.js"></script>
         <script src="plots/btc line/js/jquery-ui.min.js"></script>
 
-        <!-- Custom JS -->
+        <!-- Dummy Data for Donuts -->
+        <script src="plots/pie/data.js"></script>
+
+        <!-- Btc Line and Donuts-->
+        <script src="plots/btc line/data/coins.js"></script>
+        <script src="plots/pie/DonutChart.js"></script>
+        <script src="plots/btc line/js/LineChart.js"></script>
+        <script src="plots/btc line/js/main.js"></script>
+
+        <!-- Gapminder Scatterplot -->
+        <script src="plots/gapminder/data/data.js"></script>
+        <script src="plots/gapminder/js/main.js"></script>
+
+        <!-- Revenue Barplot -->
         <script src="data/revenues.js"></script>
         <script src="js/main.js"></script>
 
-        <script src="plots/btc line/data/coins.js"></script>
-        <script src="plots/btc line/js/main.js"></script>
-        <script src="plots/gapminder/data/data.js"></script>
-        <script src="plots/gapminder/js/main.js"></script>
+        <!-- Interactive Bin Hist -->
         <script src="plots/hist/regionData.js"></script>
         <script src="plots/hist/app.js"></script>
+
+        <!-- Transition and Delay Hist -->
         <script src="plots/d3-and-svg/birthData.js"></script>
         <script src="plots/d3-and-svg/app.js"></script>
+
+        <!-- Scatterplot-->
         <script src="plots/scatterplot-exercise/app.js"></script>
     </body>
 </html>

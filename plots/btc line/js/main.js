@@ -1,218 +1,80 @@
-const coinstats = data => {
-    const MARGIN = { left: 80, right: 80, top: 30, bottom: 40 },
-        HEIGHT = 600 - MARGIN.top - MARGIN.bottom,
-        WIDTH = 900 - MARGIN.left - MARGIN.right;
+let lineChart;
+let donut1;
+let donut2;
 
-    let svg = d3
-        .select('#btc-chart-area')
-        .append('svg')
-        .attr('width', WIDTH + MARGIN.left + MARGIN.right)
-        .attr('height', HEIGHT + MARGIN.top + MARGIN.bottom);
+// FORMATTERS
+const parseTime = d3.timeParse('%d/%m/%Y');
+const formatTime = d3.timeFormat('%m/%d/%Y');
 
-    let g = svg.append('g').attr('transform', 'translate(' + MARGIN.left + ', ' + MARGIN.top + ')');
+// COLOR SCALE
+// const btcColor = d3
+//     .scaleOrdinal()
+//     .domain(Object.keys(data))
+//     .range(
+//         d3.quantize(t => d3.interpolateSpectral(t * 0.8 + 0.1), Object.keys(data).length).reverse()
+//     );
 
-    // Time parser for x-scale
-    const parseTime = d3.timeParse('%d/%m/%Y');
+// SELECTORS
+const coinSelector = d3.select('#coin-select');
+const varSelector = d3.select('#var-select');
 
-    // For tooltip
-    const bisectDate = d3.bisector(d => d.date).left;
+// Event Listeners
+coinSelector.on('change', () => updateCharts());
+varSelector.on('change', () => lineChart.wrangleData());
 
-    // Scales
-    let x = d3.scaleTime().range([0, WIDTH]);
-    let y = d3.scaleLinear().range([HEIGHT, 0]);
+// Add jQuery UI slider
+$('#date-slider').slider({
+    range: true,
+    max: parseTime('31/10/2017').getTime(),
+    min: parseTime('12/5/2013').getTime(),
+    step: 86400000, // One day
+    values: [parseTime('12/5/2013').getTime(), parseTime('31/10/2017').getTime()],
+    slide: function(event, ui) {
+        $('#dateLabel1').text(formatTime(new Date(ui.values[0])));
+        $('#dateLabel2').text(formatTime(new Date(ui.values[1])));
 
-    // SELECTORS
-    const coinSelector = d3.select('#coin-select');
-    let coinSelectorValue = coinSelector.node().value;
-    const varSelector = d3.select('#var-select');
-    let varSelectorValue = varSelector.node().value;
+        updateCharts();
+    }
+});
 
-    // Axis generators
-    let xAxisCall = d3.axisBottom();
-    let yAxisCall = d3.axisLeft().ticks(6);
+let data = coinData; //this is from the coins.js data file
+let filtered = {};
+let coinDataForPieChart = [];
+const coins = Object.keys(data);
 
-    // Axis groups
-    let xAxis = g
-        .append('g')
-        .attr('class', 'x axis')
-        .attr('transform', `translate(0, ${HEIGHT})`);
-    let yAxis = g.append('g').attr('class', 'y axis');
+for (const coin of coins) {
+    const filteredCoin = data[coin].filter(d => d['24h_vol'] !== null);
+    filteredCoin.forEach(d => {
+        d.date = parseTime(d.date);
+        d.price_usd = +d.price_usd;
+        d.market_cap = +d.market_cap;
+        d['24h_vol'] = +d['24h_vol'];
 
-    // Y-Axis label
-    yAxis
-        .append('text')
-        .attr('class', 'axis-title')
-        .attr('transform', 'rotate(-90)')
-        .attr('y', 6)
-        .attr('dy', '.71em')
-        .style('text-anchor', 'end')
-        .attr('fill', '#5D6971')
-        .text('Price in Dollars');
-
-    // Line path generator
-    let line = d3
-        .line()
-        .x(d => x(d.date))
-        .y(d => y(d[varSelectorValue]));
-
-    // Data cleaning
-    const dataKeys = Object.keys(data);
-    for (const key of dataKeys) {
-        data[key].forEach(coin => {
-            coin.date = parseTime(coin.date);
-            coin.price_usd = +coin.price_usd;
-            coin.market_cap = +coin.market_cap;
-            coin['24h_vol'] = +coin['24h_vol'];
+        coinDataForPieChart.push({
+            coin: coin,
+            date: d.date,
+            price_usd: d.price_usd,
+            market_cap: d.market_cap,
+            '24h_vol': d['24h_vol']
         });
-    }
-
-    // COIN-SELECTOR CHANGE
-    coinSelector.on('change', () => {
-        coinSelectorValue = coinSelector.node().value;
-        update();
     });
+    filtered = { ...filtered, [coin]: filteredCoin };
+}
 
-    // VAR SELECTOR CHANGE
-    varSelector.on('change', () => {
-        varSelectorValue = varSelector.node().value;
-        update();
-    });
+function arcClicked(arc) {
+    $('#coin-select').val(arc.data.coin);
+    updateCharts();
+}
 
-    //add line
-    g.append('path')
-        .attr('class', 'btc-line')
-        .attr('fill', 'none')
-        .attr('stroke', 'grey')
-        .attr('stroke-with', '3px');
+lineChart = new LineChart('#btc-chart-area', filtered);
 
-    let formatTime = d3.timeFormat('%m/%d/%Y');
+const lastDay = d3.max(coinDataForPieChart.map(d => d.date));
+const lastDayOfPieData = coinDataForPieChart.filter(d => d.date.getTime() === lastDay.getTime());
+donut1 = new DonutChart('#donut1', lastDayOfPieData, '24h_vol');
+donut2 = new DonutChart('#donut2', lastDayOfPieData, 'market_cap');
 
-    // Add jQuery UI slider
-    $('#date-slider').slider({
-        range: true,
-        max: parseTime('31/10/2017').getTime(),
-        min: parseTime('12/5/2013').getTime(),
-        step: 86400000, // One day
-        values: [parseTime('12/5/2013').getTime(), parseTime('31/10/2017').getTime()],
-        slide: function(event, ui) {
-            $('#dateLabel1').text(formatTime(new Date(ui.values[0])));
-            $('#dateLabel2').text(formatTime(new Date(ui.values[1])));
-            // $('#dateLabel1').text(formatTime(new Date(ui.values[0])));
-            // $('#dateLabel2').text(formatTime(new Date(ui.values[1])));
-            update();
-        }
-    });
-
-    //transition speed
-    const t = () => d3.transition().duration(1000);
-
-    // Fix for format values
-    let formatSi = d3.format('.2s');
-    function formatAbbreviation(x) {
-        let s = formatSi(x);
-
-        // checks last character of formatted output
-        switch (s[s.length - 1]) {
-            case 'G':
-                return s.slice(0, -1) + 'B'; //removes last character and replaces it with 'B'
-            case 'k':
-                return s.slice(0, -1) + 'K';
-            case 'm':
-                return x;
-        }
-        return s;
-    }
-
-    function update() {
-        // Set scale domains
-        // rescale horizontally (and narrows data down by date range)
-        const sliderValues = $('#date-slider').slider('values');
-        x.domain([sliderValues[0], sliderValues[1]]);
-        const newDataByTime = data[coinSelectorValue].filter(
-            d => d.date.getTime() >= sliderValues[0] && d.date.getTime() <= sliderValues[1]
-        );
-
-        y.domain([
-            d3.min(newDataByTime, d => d[varSelectorValue]),
-            d3.max(newDataByTime, d => d[varSelectorValue])
-        ]);
-
-        // Generate axes once scales have been set
-        xAxis.transition(t()).call(xAxisCall.scale(x));
-        yAxisCall.scale(y);
-        yAxis.transition(t()).call(yAxisCall.tickFormat(formatAbbreviation));
-
-        // Redraws Line
-        g.select('.btc-line')
-            .transition(t)
-            .attr('d', line(newDataByTime));
-    }
-
-    // Draw initial vis
-    update();
-
-    /******************************** Tooltip Code ********************************/
-
-    let focus = g
-        .append('g')
-        .attr('class', 'btc-focus')
-        .style('display', 'none');
-
-    focus
-        .append('line')
-        .attr('class', 'x-hover-line btc-hover-line')
-        .attr('y1', 0)
-        .attr('y2', HEIGHT);
-
-    focus
-        .append('line')
-        .attr('class', 'y-hover-line btc-hover-line')
-        .attr('x1', 0)
-        .attr('x2', WIDTH);
-
-    focus.append('circle').attr('r', 7.5);
-
-    let toolTipInfoBox = d3
-        .select('body')
-        .append('div')
-        .attr('class', 'btc-tooltip-info');
-
-    g.append('rect')
-        .attr('class', 'btc-overlay')
-        .attr('width', WIDTH)
-        .attr('height', HEIGHT)
-        .on('mouseover', function() {
-            focus.style('display', null);
-        })
-        .on('mouseout', function() {
-            toolTipInfoBox.style('opacity', 0);
-            focus.style('display', 'none');
-        })
-        .on('mousemove', mousemove);
-
-    let formatOutput = d3.format(',.2f');
-
-    function mousemove() {
-        let x0 = x.invert(d3.mouse(this)[0]),
-            i = bisectDate(data[coinSelectorValue], x0, 1),
-            d0 = data[coinSelectorValue][i - 1],
-            d1 = data[coinSelectorValue][i],
-            d = x0 - d0.date > d1.date - x0 ? d1 : d0;
-
-        toolTipInfoBox
-            .style('opacity', 1)
-            .style('left', `${d3.event.x + 23}px`)
-            .style('top', `${y(d[varSelectorValue]) + 129}px`)
-            .html(
-                `<h4>$${formatOutput(d[varSelectorValue])}</h4><span>${formatTime(d.date)}</span>`
-            );
-
-        focus.attr('transform', `translate(${x(d.date)}, ${y(d[varSelectorValue])})`);
-        focus.select('.x-hover-line').attr('y2', HEIGHT - y(d[varSelectorValue]));
-        focus.select('.y-hover-line').attr('x2', -x(d.date));
-    }
-
-    /******************************** Tooltip Code ********************************/
-};
-
-coinstats(coinData);
+function updateCharts() {
+    lineChart.wrangleData();
+    donut1.wrangleData();
+    donut2.wrangleData();
+}

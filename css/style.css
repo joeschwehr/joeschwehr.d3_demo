@@ -36,12 +36,25 @@ svg {
     align-items: center;
 }
 
-.navbar-brand span {
+.navbar-brand span,
+.nav-link {
     color: rgb(149, 178, 197);
     font-weight: 300;
     letter-spacing: 0.2rem;
     font-size: 1.1rem;
     line-height: 1.25rem;
+    text-transform: uppercase;
+}
+
+.nav-links {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-link {
+    margin: 0 20px;
 }
 
 /* rows */
@@ -89,6 +102,20 @@ svg {
     padding-bottom: 10px;
     display: flex;
     justify-content: center;
+}
+
+.btc-charts {
+    display: flex;
+}
+
+.btc-line-chart {
+    margin-right: 10px;
+}
+
+.btc-donut-charts {
+    display: flex;
+    align-items: center;
+    flex-flow: column;
 }
 
 #slider-div label {
@@ -178,7 +205,7 @@ svg {
 .btc-line {
     fill: none;
     stroke-width: 1.5px;
-    stroke: rgb(54, 106, 167);
+    /* stroke: rgb(54, 106, 167); */
 }
 
 /* plot Gapminder ****************************************/
@@ -264,4 +291,9 @@ input:focus {
 .svg-four .tick line {
     stroke: rgb(240, 240, 240);
     stroke-dasharray: 15, 5;
+}
+
+path {
+    z-index: 10;
+    cursor: pointer;
 }

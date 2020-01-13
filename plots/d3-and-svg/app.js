@@ -56,6 +56,11 @@ const sv3 = birthData => {
         })
         .attr('fill', '#1b69c4');
 
+    // SIMPLE WAY TO MAKE TOOLTIPS
+    g.selectAll('rect')
+        .append('title')
+        .text('hello');
+
     // SET TITLE
     g.append('text')
         .attr('class', 'returns-header')
