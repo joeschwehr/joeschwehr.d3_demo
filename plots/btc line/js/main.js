@@ -1,6 +1,7 @@
 let lineChart;
 let donut1;
 let donut2;
+let timeline;
 
 // FORMATTERS
 const parseTime = d3.timeParse('%d/%m/%Y');
@@ -38,7 +39,7 @@ $('#date-slider').slider({
 });
 
 let data = coinData; //this is from the coins.js data file
-let filtered = {};
+let filteredData = {};
 let coinDataForPieChart = [];
 const coins = Object.keys(data);
 
@@ -58,7 +59,7 @@ for (const coin of coins) {
             '24h_vol': d['24h_vol']
         });
     });
-    filtered = { ...filtered, [coin]: filteredCoin };
+    filteredData = { ...filteredData, [coin]: filteredCoin };
 }
 
 function arcClicked(arc) {
@@ -66,13 +67,14 @@ function arcClicked(arc) {
     updateCharts();
 }
 
-lineChart = new LineChart('#btc-chart-area', filtered);
+lineChart = new LineChart('#btc-chart-area', filteredData);
 
 const lastDay = d3.max(coinDataForPieChart.map(d => d.date));
 const lastDayOfPieData = coinDataForPieChart.filter(d => d.date.getTime() === lastDay.getTime());
 donut1 = new DonutChart('#donut1', lastDayOfPieData, '24h_vol');
 donut2 = new DonutChart('#donut2', lastDayOfPieData, 'market_cap');
 
+timeline = new Timeline('#timeline-area');
 function updateCharts() {
     lineChart.wrangleData();
     donut1.wrangleData();

@@ -7,7 +7,7 @@ class LineChart {
 
     initVis() {
         this.MARGIN = { left: 50, right: 25, top: 30, bottom: 40 };
-        this.HEIGHT = 600 - this.MARGIN.top - this.MARGIN.bottom;
+        this.HEIGHT = 400 - this.MARGIN.top - this.MARGIN.bottom;
         this.WIDTH = 800 - this.MARGIN.left - this.MARGIN.right;
 
         this.svg = d3
@@ -164,7 +164,7 @@ class LineChart {
                 focus.style('display', null);
             })
             .on('mouseout', function() {
-                toolTipInfoBox.style('opacity', 0);
+                toolTipInfoBox.style('opacity', 0).style('transform', 'scale(0)');
                 focus.style('display', 'none');
             })
             .on('mousemove', mousemove);
@@ -184,6 +184,7 @@ class LineChart {
 
             toolTipInfoBox
                 .style('opacity', 1)
+                .style('transform', 'scale(1)')
                 .style('left', `${d3.event.x + 23}px`)
                 .style('top', `${vis.y(d[vis.varSelectorValue]) + 129}px`)
                 .html(
