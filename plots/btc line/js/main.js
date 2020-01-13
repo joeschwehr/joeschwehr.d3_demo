@@ -35,7 +35,7 @@ $('#date-slider').slider({
     values: [parseTime('12/5/2013').getTime(), parseTime('31/10/2017').getTime()],
     slide: function(event, ui) {
         const dates = ui.values.map(val => new Date(val));
-        const xVals = dates.map(date => timeline.x.date);
+        const xVals = dates.map(date => timeline.x(date));
 
         timeline.brushComponent.call(timeline.brush.move, xVals);
     }
