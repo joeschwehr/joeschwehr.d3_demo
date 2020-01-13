@@ -21,7 +21,10 @@ const varSelector = d3.select('#var-select');
 
 // Event Listeners
 coinSelector.on('change', () => updateCharts());
-varSelector.on('change', () => lineChart.wrangleData());
+varSelector.on('change', () => {
+    lineChart.wrangleData();
+    timeline.wrangleData();
+});
 
 // Add jQuery UI slider
 $('#date-slider').slider({
@@ -31,10 +34,10 @@ $('#date-slider').slider({
     step: 86400000, // One day
     values: [parseTime('12/5/2013').getTime(), parseTime('31/10/2017').getTime()],
     slide: function(event, ui) {
-        $('#dateLabel1').text(formatTime(new Date(ui.values[0])));
-        $('#dateLabel2').text(formatTime(new Date(ui.values[1])));
+        const dates = ui.values.map(val => new Date(val));
+        const xVals = dates.map(date => timeline.x.date);
 
-        updateCharts();
+        timeline.brushComponent.call(timeline.brush.move, xVals);
     }
 });
 
@@ -67,16 +70,29 @@ function arcClicked(arc) {
     updateCharts();
 }
 
+function brushed() {
+    const selection = d3.event.selection || timeline.x.range();
+    const newValues = selection.map(timeline.x.invert);
+
+    $('#date-slider')
+        .slider('values', 0, newValues[0])
+        .slider('values', 1, newValues[1]);
+    $('#dateLabel1').text(formatTime(newValues[0]));
+    $('#dateLabel2').text(formatTime(newValues[1]));
+    lineChart.wrangleData();
+}
+
 lineChart = new LineChart('#btc-chart-area', filteredData);
 
 const lastDay = d3.max(coinDataForPieChart.map(d => d.date));
 const lastDayOfPieData = coinDataForPieChart.filter(d => d.date.getTime() === lastDay.getTime());
 donut1 = new DonutChart('#donut1', lastDayOfPieData, '24h_vol');
 donut2 = new DonutChart('#donut2', lastDayOfPieData, 'market_cap');
-
 timeline = new Timeline('#timeline-area');
+
 function updateCharts() {
     lineChart.wrangleData();
     donut1.wrangleData();
     donut2.wrangleData();
+    timeline.wrangleData();
 }
