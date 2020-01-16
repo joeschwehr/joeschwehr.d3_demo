@@ -89,6 +89,29 @@ svg {
     fill: url(#mainGradient);
 }
 
+/* dashboard **********************************/
+
+.axis {
+    font: 10px sans-serif;
+}
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #d4d8da;
+    stroke-width: 2px;
+    shape-rendering: crispEdges;
+}
+
+.line {
+    fill: none;
+    stroke-width: 2px;
+}
+
+.overlay {
+    fill: none;
+    pointer-events: all;
+}
+
 /* btc plot styles ******************************/
 
 #btc-chart-area svg {

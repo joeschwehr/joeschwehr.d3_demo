@@ -1,9 +1,16 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <!-- meta -->
         <meta charset="utf-8" />
         <meta name="description" content="" />
+
+        <!-- title -->
         <title>2020 Outlook</title>
+
+        <!-- fav -->
+        <link rel="shortcut icon" href="#" />
+
         <!-- Bootstrap -->
         <link rel="stylesheet" href="css/bootstrap.min.css" />
         <!-- Custom styling -->
@@ -31,6 +38,40 @@
 
         <div class="container">
             <div class="row-one"></div>
+
+            <!-- Data Dashboard... db -->
+            <div class="row">
+                <div id="db-left-charts" class="col-sm-12 col-md-8">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>
+                                <span id="db-dateLabel1">01/01/2017</span> to
+                                <span id="db-dateLabel2">12/10/2017</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <select id="db-var-select" class="form-control">
+                                <option selected value="call_revenue">Revenue (USD)</option>
+                                <option value="call_duration">Call Time (seconds)</option>
+                                <option value="units_sold">Units Sold</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="db-stacked-area"></div>
+                    <div id="db-timeline"></div>
+                </div>
+                <div id="db-right-charts" class="col-md-4 col-sm-12">
+                    <div class="row">
+                        <div class="col-sm-6 col-md-12" id="company-size"></div>
+                        <div class="col-sm-6 col-md-12" id="units-sold"></div>
+                        <div class="col-sm-6 col-md-12" id="revenue"></div>
+                        <div class="col-sm-6 col-md-12" id="call-duration"></div>
+                    </div>
+                </div>
+            </div>
+            <hr />
 
             <!-- Btc Plot -->
             <div id="btc-selections" class="row">
@@ -142,12 +183,18 @@
 
         <!-- External JS libraries -->
         <script src="https://d3js.org/d3.v5.min.js"></script>
-        <script src="plots/gapminder/js/d3tooltip.js"></script>
         <script src="plots/btc line/js/jquery.min.js"></script>
         <script src="plots/btc line/js/jquery-ui.min.js"></script>
+        <script src="plots/gapminder/js/d3tooltip.js"></script>
 
-        <!-- Dummy Data for Donuts -->
-        <script src="plots/pie/data.js"></script>
+        <!-- Dashboard JS -->
+        <!-- calls.js "exports" db_data -->
+        <script src="plots/data-dashboard/data/calls.js"></script>
+        <script src="plots/data-dashboard/js/StackedAreaChart.js"></script>
+        <script src="plots/data-dashboard/js/BarChart.js"></script>
+        <script src="plots/data-dashboard/js/DonutChart.js"></script>
+        <script src="plots/data-dashboard/js/Timeline.js"></script>
+        <script src="plots/data-dashboard/js/main.js"></script>
 
         <!-- Btc Line and Donuts-->
         <script src="plots/btc line/data/coins.js"></script>
@@ -172,7 +219,7 @@
         <script src="plots/d3-and-svg/birthData.js"></script>
         <script src="plots/d3-and-svg/app.js"></script>
 
-        <!-- Scatterplot-->
+        <!-- Scatterplot -->
         <script src="plots/scatterplot-exercise/app.js"></script>
     </body>
 </html>
