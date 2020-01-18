@@ -1,9 +1,13 @@
 //Globals
 const CHART_MARGIN = { top: 50, right: 20, bottom: 40, left: 60 };
-const CHART_WIDTH = 700 - CHART_MARGIN.left - CHART_MARGIN.right;
-const CHART_HEIGHT = 350 - CHART_MARGIN.top - CHART_MARGIN.bottom;
+const CHART_WIDTH = 750 - CHART_MARGIN.left - CHART_MARGIN.right;
+const CHART_HEIGHT = 450 - CHART_MARGIN.top - CHART_MARGIN.bottom;
 const parseDate = d3.timeParse('%d/%m/%Y');
 let stackedAreaChart;
+let brushZone;
+let donutChart;
+let barChartRevenue;
+let barChartDuration;
 
 // Events listeners & selections
 let dbDropdown = d3.select('#db-var-select');
@@ -77,8 +81,13 @@ const calcDataForStackChart = () => {
 };
 calcDataForStackChart();
 
+const brushMove = () => {
+    console.log('brushMove');
+};
+
 // create instances of the vis objects
 stackedAreaChart = new StackedAreaChart('#db-stacked-area');
+brushZone = new TimeLine('#db-timeline');
 
 const updateAllVis = () => {
     stackedAreaChart.wrangleData();

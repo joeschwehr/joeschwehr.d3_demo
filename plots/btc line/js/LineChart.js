@@ -186,7 +186,7 @@ class LineChart {
                 .style('opacity', 1)
                 .style('transform', 'scale(1)')
                 .style('left', `${d3.event.x + 23}px`)
-                .style('top', `${vis.y(d[vis.varSelectorValue]) + 584}px`)
+                .style('top', `${vis.y(d[vis.varSelectorValue]) + 849}px`)
                 .html(
                     `<h4>$${formatOutput(d[vis.varSelectorValue])}</h4><span>${formatTime(
                         d.date
