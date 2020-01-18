@@ -33,12 +33,12 @@ let totalDuration = [];
 let totalUnits = [];
 
 // calculate aveage metrics per day
-const calcDataForStackChart = () => {
-    let allDates = new Set(db_data.map(d => d.date.getTime()));
+const calcDataForStackChart = data => {
+    let allDates = new Set(data.map(d => d.date.getTime()));
     allDates = [...allDates];
 
     allDates.forEach(date => {
-        const callsOnGivenDay = db_data.filter(d => d.date.getTime() === date);
+        const callsOnGivenDay = data.filter(d => d.date.getTime() === date);
 
         const westCalls = callsOnGivenDay.filter(d => d.team === 'west');
         const sCalls = callsOnGivenDay.filter(d => d.team === 'south');
@@ -79,16 +79,27 @@ const calcDataForStackChart = () => {
         calc('total', 'units_sold', totalUnits);
     });
 };
-calcDataForStackChart();
+calcDataForStackChart(db_data);
 
 const brushMove = () => {
-    console.log('brushMove');
+    // GET BRUSH INPUT
+    let selection = d3.event.selection || brushZone.x.range();
+    let brushDates = selection.map(d => brushZone.x.invert(d));
+
+    // UPDATE PAGE LABELS
+    const formatTime = d3.timeFormat('%m/%d/%y');
+    d3.select('#db-dateLabel1').text(formatTime(brushDates[0]));
+    d3.select('#db-dateLabel2').text(formatTime(brushDates[1]));
+
+    // REWRANGLE
+    updateAllVis(brushDates);
 };
 
 // create instances of the vis objects
 stackedAreaChart = new StackedAreaChart('#db-stacked-area');
 brushZone = new TimeLine('#db-timeline');
 
-const updateAllVis = () => {
-    stackedAreaChart.wrangleData();
+const updateAllVis = brushDates => {
+    stackedAreaChart.wrangleData(brushDates);
+    brushZone.wrangleData();
 };

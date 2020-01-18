@@ -37,6 +37,21 @@ class TimeLine {
             .attr('class', 'db-axis')
             .attr('transform', `translate(0, ${vis.height})`);
 
+        // AXIS
+        vis.yAxisCall = d3.axisLeft().ticks(3);
+
+        vis.yAxis = vis.g
+            .append('g')
+            .attr('class', 'db-axis')
+            .attr('transform', `translate(0, ${0})`);
+
+        // AREA
+        vis.area = d3
+            .area()
+            .x(d => vis.x(new Date(d.date)))
+            .y0(vis.height)
+            .y1(d => vis.y(d.sum));
+
         // fill area
         vis.areaPath = vis.g.append('path').attr('fill', '#ccc');
 
@@ -62,51 +77,64 @@ class TimeLine {
     wrangleData() {
         let vis = this;
 
-        //     vis.variable = "call_revenue"
+        // get selector value
+        vis.selectorValue = dbDropdown.node().value;
 
-        //     vis.dayNest = d3.nest()
-        //         .key(function(d){ return formatTime(d.date); })
-        //         .entries(calls)
+        // assign data based on selector
+        vis.selectorValue === 'call_revenue'
+            ? (vis.data = totalRevenue)
+            : vis.selectorValue === 'call_duration'
+            ? (vis.data = totalDuration)
+            : (vis.data = totalUnits);
 
-        //     vis.dataFiltered = vis.dayNest
-        //         .map(function(day){
-        //             return {
-        //                 date: day.key,
-        //                 sum: day.values.reduce(function(accumulator, current){
-        //                     return accumulator + current[vis.variable]
-        //                 }, 0)
-        //             }
+        // restructures our data... creates new object...
+        // { key: 12/12/12, values: {date: 1/1/12, west: 12, midwest: 12, south: 12, ne: 12}}
+        vis.dayNest = d3
+            .nest()
+            .key(d => d.date)
+            .entries(vis.data);
 
-        //         })
+        // SUMS THE REGION-TOTALS OF OUR DATA
+        vis.dataSum = vis.dayNest.map(day => {
+            return {
+                date: day.key,
+                sum: day.values.reduce((accumulator, current) => {
+                    return (
+                        accumulator +
+                        current.west +
+                        current.south +
+                        current.midwest +
+                        current.northeast
+                    );
+                }, 0)
+            };
+        });
 
-        this.updateVis();
+        vis.updateVis();
     }
 
     updateVis() {
         let vis = this;
 
-        // vis.x.domain(
-        //     d3.extent(vis.dataFiltered, d => {
-        //         return parseTime(d.date);
-        //     })
-        // );
-        // vis.y.domain([0, d3.max(vis.dataFiltered, d => d.sum)]);
+        // UPDATE DOMAINS
+        vis.x.domain(d3.extent(vis.dataSum, d => new Date(d.date)));
+        const yDomainMax = d3.max(vis.dataSum.map(d => d.sum));
+        vis.y.domain([0, yDomainMax]);
 
+        // CALL AXIS AFTER DOMAIN IS SET
         vis.xAxisCall.scale(vis.x);
         vis.xAxis.call(vis.xAxisCall);
+        vis.yAxisCall.scale(vis.y);
+        vis.yAxis
+            .transition()
+            .duration(750)
+            .call(vis.yAxisCall);
 
-        //     vis.area0 = d3.area()
-        //         .x((d) => { return vis.x(parseTime(d.date)); })
-        //         .y0(vis.height)
-        //         .y1(vis.height);
-
-        //     vis.area = d3.area()
-        //         .x((d) => { return vis.x(parseTime(d.date)); })
-        //         .y0(vis.height)
-        //         .y1((d) => { return vis.y(d.sum); })
-
-        //     vis.areaPath
-        //         .data([vis.dataFiltered])
-        //         .attr("d", vis.area);
+        // DRAW AREA
+        vis.areaPath
+            .data([vis.dataSum])
+            .transition()
+            .duration(750)
+            .attr('d', vis.area);
     }
 }

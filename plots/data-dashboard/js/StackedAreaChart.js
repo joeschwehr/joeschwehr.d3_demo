@@ -48,27 +48,40 @@ class StackedAreaChart {
         this.wrangleData();
     }
 
-    wrangleData() {
-        // get new selector value
-        this.selectorValue = dbDropdown.node().value;
+    wrangleData(brushDates = d3.extent(db_data, d => d.date)) {
+        let vis = this;
 
-        // update based on selector
-        this.selectorValue === 'call_revenue'
-            ? this.updateVis(totalRevenue)
-            : this.selectorValue === 'call_duration'
-            ? this.updateVis(totalDuration)
-            : this.updateVis(totalUnits);
+        // get selector value
+        vis.selectorValue = dbDropdown.node().value;
+
+        // assign data based on selector
+        vis.selectorValue === 'call_revenue'
+            ? (vis.data = totalRevenue)
+            : vis.selectorValue === 'call_duration'
+            ? (vis.data = totalDuration)
+            : (vis.data = totalUnits);
+
+        // FILTER BASED ON BRUSH SELECTIONS
+        vis.filteredData = vis.data.filter(d => {
+            return (
+                d.date.getTime() >= brushDates[0].getTime() &&
+                d.date.getTime() <= brushDates[1].getTime()
+            );
+        });
+
+        this.updateVis();
     }
 
-    updateVis(data) {
+    updateVis() {
         let vis = this;
-        vis.data = data;
 
         // DOMAIN MAX
-        let yDomainMax = d3.max(data.map(d => d.west + d.south + d.midwest + d.northeast));
+        let yDomainMax = d3.max(
+            vis.filteredData.map(d => d.west + d.south + d.midwest + d.northeast)
+        );
 
         // UPDATE SCALE DOMAINS
-        vis.x.domain(d3.extent(vis.data, d => d.date));
+        vis.x.domain(d3.extent(vis.filteredData, d => d.date));
         vis.y.domain([0, yDomainMax]);
         vis.z.domain(vis.keys);
         vis.stack.keys(vis.keys);
@@ -81,7 +94,7 @@ class StackedAreaChart {
             .call(d3.axisLeft(vis.y));
 
         // JOIN
-        let layer = vis.g.selectAll('.db-path').data(vis.stack(vis.data));
+        let layer = vis.g.selectAll('.db-path').data(vis.stack(vis.filteredData));
 
         // EXIT
         layer.exit().remove();
