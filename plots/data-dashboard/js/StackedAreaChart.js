@@ -1,66 +1,146 @@
-console.log('stackedareachart');
+class StackedAreaChart {
+    constructor(parentElement) {
+        this.parentElement = parentElement;
 
-// var svg = d3.select("svg"),
-//     margin = {top: 20, right: 20, bottom: 30, left: 50},
-//     width = svg.attr("width") - margin.left - margin.right,
-//     height = svg.attr("height") - margin.top - margin.bottom;
+        this.initVis();
+    }
 
-// var parseDate = d3.timeParse("%Y %b %d");
+    initVis() {
+        let vis = this;
 
-// var x = d3.scaleTime().range([0, width]),
-//     y = d3.scaleLinear().range([height, 0]),
-//     z = d3.scaleOrdinal(d3.schemeCategory10);
+        // set SVG
+        vis.svg = d3
+            .select(vis.parentElement)
+            .attr('width', CHART_WIDTH + CHART_MARGIN.left + CHART_MARGIN.right)
+            .attr('height', CHART_HEIGHT + CHART_MARGIN.top + CHART_MARGIN.bottom);
 
-// var stack = d3.stack();
+        // add g
+        vis.g = vis.svg
+            .append('g')
+            .attr('transform', `translate(${CHART_MARGIN.left}, ${CHART_MARGIN.top})`);
 
-// var area = d3.area()
-//     .x(function(d, i) { return x(d.data.date); })
-//     .y0(function(d) { return y(d[0]); })
-//     .y1(function(d) { return y(d[1]); });
+        // SCALES
+        vis.x = d3.scaleTime().range([0, CHART_WIDTH]);
+        vis.y = d3.scaleLinear().range([CHART_HEIGHT, 0]);
+        vis.z = d3.scaleOrdinal(d3.schemeTableau10);
 
-// var g = svg.append("g")
-//     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        // STACK
+        vis.stack = d3.stack();
 
-// d3.tsv("data.tsv", type).then(function(error, data) {
-//   if (error) throw error;
+        // AREA
+        vis.area = d3
+            .area()
+            .x((d, i) => vis.x(d.data.date))
+            .y0(d => vis.y(d[0]))
+            .y1(d => vis.y(d[1]));
 
-//   var keys = data.columns.slice(1);
+        // KEYS
+        vis.keys = ['west', 'south', 'northeast', 'midwest'];
 
-//   x.domain(d3.extent(data, function(d) { return d.date; }));
-//   z.domain(keys);
-//   stack.keys(keys);
+        // AXIS GROUPS
+        vis.xAxisGroup = vis.g
+            .append('g')
+            .attr('class', 'db-axis')
+            .attr('transform', `translate(${0}, ${CHART_HEIGHT})`);
+        vis.yAxisGroup = vis.g.append('g').attr('class', 'db-axis');
 
-//   var layer = g.selectAll(".layer")
-//     .data(stack(data))
-//     .enter().append("g")
-//       .attr("class", "layer");
+        this.legend();
+        this.wrangleData();
+    }
 
-//   layer.append("path")
-//       .attr("class", "area")
-//       .style("fill", function(d) { return z(d.key); })
-//       .attr("d", area);
+    wrangleData() {
+        // get new selector value
+        this.selectorValue = dbDropdown.node().value;
 
-//   layer.filter(function(d) { return d[d.length - 1][1] - d[d.length - 1][0] > 0.01; })
-//     .append("text")
-//       .attr("x", width - 6)
-//       .attr("y", function(d) { return y((d[d.length - 1][0] + d[d.length - 1][1]) / 2); })
-//       .attr("dy", ".35em")
-//       .style("font", "10px sans-serif")
-//       .style("text-anchor", "end")
-//       .text(function(d) { return d.key; });
+        // update based on selector
+        this.selectorValue === 'call_revenue'
+            ? this.updateVis(totalRevenue)
+            : this.selectorValue === 'call_duration'
+            ? this.updateVis(totalDuration)
+            : this.updateVis(totalUnits);
+    }
 
-//   g.append("g")
-//       .attr("class", "axis axis--x")
-//       .attr("transform", "translate(0," + height + ")")
-//       .call(d3.axisBottom(x));
+    updateVis(data) {
+        let vis = this;
+        vis.data = data;
 
-//   g.append("g")
-//       .attr("class", "axis axis--y")
-//       .call(d3.axisLeft(y).ticks(10, "%"));
-// });
+        // DOMAIN MAX
+        let yDomainMax = d3.max(data.map(d => d.west + d.south + d.midwest + d.northeast));
 
-// function type(d, i, columns) {
-//   d.date = parseDate(d.date);
-//   for (var i = 1, n = columns.length; i < n; ++i) d[columns[i]] = d[columns[i]] / 100;
-//   return d;
-// }
+        // UPDATE SCALE DOMAINS
+        vis.x.domain(d3.extent(vis.data, d => d.date));
+        vis.y.domain([0, yDomainMax]);
+        vis.z.domain(vis.keys);
+        vis.stack.keys(vis.keys);
+
+        // UPDATE AXIS AFTER SCALES ARE SET
+        vis.xAxisGroup.call(d3.axisBottom(vis.x).ticks(3));
+        vis.yAxisGroup
+            .transition()
+            .duration(750)
+            .call(d3.axisLeft(vis.y));
+
+        // JOIN
+        let layer = vis.g.selectAll('.db-path').data(vis.stack(vis.data));
+
+        // EXIT
+        layer.exit().remove();
+
+        // UPDATE
+        layer
+            .attr('fill', d => vis.z(d.key))
+            .transition()
+            .duration(750)
+            .attr('d', vis.area);
+
+        // ENTER
+        layer
+            .enter()
+            .append('path')
+            .attr('class', 'db-path')
+            .attr('fill', d => vis.z(d.key))
+            .attr('d', vis.area);
+
+        // CREATE OUTPUT LAYERS (non update)
+        // vis.layer = vis.g
+        //     .selectAll('.db-layer')
+        //     .data(vis.stack(vis.data))
+        //     .enter()
+        //     .append('g')
+        //     .attr('class', 'db-layer')
+        //     .append('path')
+        //     .attr('class', 'db-area')
+        //     .style('fill', d => vis.z(d.key))
+        //     .attr('d', vis.area);
+    }
+
+    legend() {
+        let vis = this;
+
+        vis.legend = vis.svg
+            .selectAll('.db-legend')
+            .data(vis.keys)
+            .enter()
+            .append('g')
+            .attr('class', 'db-legend');
+
+        vis.legend
+            .append('rect')
+            .attr('width', 15)
+            .attr('height', 15)
+            .attr('y', 13)
+            .attr('x', (d, i) => (i * CHART_WIDTH) / 4 + CHART_MARGIN.left + 35)
+            .attr('fill', d => vis.z(d))
+            .attr('stroke', 'rgba(200,200,200,1)')
+            .attr('stroke-width', 0.3);
+
+        vis.legend
+            .append('text')
+            .style('text-transform', 'capitalize')
+            .attr('text-anchor', 'start')
+            .attr('y', 25)
+            .attr('x', (d, i) => (i * CHART_WIDTH) / 4 + CHART_MARGIN.left + 55)
+            .attr('fill', 'black')
+            .text(d => d);
+    }
+}

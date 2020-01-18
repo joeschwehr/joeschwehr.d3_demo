@@ -34,7 +34,7 @@ class LineChart {
             .attr('stroke-with', '1.5px');
 
         // Y-Axis label
-        this.yAxis = this.g.append('g').attr('class', 'y axis');
+        this.yAxis = this.g.append('g').attr('class', 'btc-axis');
         this.yAxis
             .append('text')
             .attr('class', 'axis-title')
@@ -52,7 +52,7 @@ class LineChart {
         // Axis groups
         this.xAxis = this.g
             .append('g')
-            .attr('class', 'x axis')
+            .attr('class', 'btc-axis')
             .attr('transform', `translate(0, ${this.HEIGHT})`);
 
         this.wrangleData();
@@ -186,7 +186,7 @@ class LineChart {
                 .style('opacity', 1)
                 .style('transform', 'scale(1)')
                 .style('left', `${d3.event.x + 23}px`)
-                .style('top', `${vis.y(d[vis.varSelectorValue]) + 129}px`)
+                .style('top', `${vis.y(d[vis.varSelectorValue]) + 584}px`)
                 .html(
                     `<h4>$${formatOutput(d[vis.varSelectorValue])}</h4><span>${formatTime(
                         d.date

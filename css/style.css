@@ -90,15 +90,18 @@ svg {
 }
 
 /* dashboard **********************************/
+#db-stacked-area {
+    margin-top: 10px;
+}
 
-.axis {
+.db-axis {
     font: 10px sans-serif;
 }
-.axis path,
-.axis line {
+.db-axis path,
+.db-axis line {
     fill: none;
-    stroke: #d4d8da;
-    stroke-width: 2px;
+    stroke: #a3a3a3;
+    stroke-width: 1px;
     shape-rendering: crispEdges;
 }
 
@@ -175,7 +178,7 @@ svg {
 .btc-axis path,
 .btc-axis line {
     fill: none;
-    stroke: #d4d8da;
+    stroke: #a3a3a3;
     stroke-width: 1px;
     shape-rendering: crispEdges;
 }
