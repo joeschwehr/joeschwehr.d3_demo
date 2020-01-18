@@ -81,10 +81,11 @@ const calcDataForStackChart = data => {
 };
 calcDataForStackChart(db_data);
 
+let brushDates = d3.extent(db_data, d => d.date);
 const brushMove = () => {
     // GET BRUSH INPUT
     let selection = d3.event.selection || brushZone.x.range();
-    let brushDates = selection.map(d => brushZone.x.invert(d));
+    brushDates = selection.map(d => brushZone.x.invert(d));
 
     // UPDATE PAGE LABELS
     const formatTime = d3.timeFormat('%m/%d/%y');
@@ -92,14 +93,14 @@ const brushMove = () => {
     d3.select('#db-dateLabel2').text(formatTime(brushDates[1]));
 
     // REWRANGLE
-    updateAllVis(brushDates);
+    updateAllVis();
 };
 
 // create instances of the vis objects
 stackedAreaChart = new StackedAreaChart('#db-stacked-area');
 brushZone = new TimeLine('#db-timeline');
 
-const updateAllVis = brushDates => {
+const updateAllVis = () => {
     stackedAreaChart.wrangleData(brushDates);
     brushZone.wrangleData();
 };
