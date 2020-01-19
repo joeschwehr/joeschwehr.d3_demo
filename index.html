@@ -40,34 +40,37 @@
             <div class="row-one"></div>
 
             <!-- Data Dashboard... db -->
-            <div class="row">
-                <div id="db-left-charts" class="col-sm-12 col-md-8">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <label>
-                                <span id="db-dateLabel1">01/01/2019</span> to
-                                <span id="db-dateLabel2">12/10/2019</span>
-                            </label>
-                        </div>
+            <div class="row dashboard">
+                <div id="db-left-charts">
+                    <div class="db-selection-area">
+                        <select id="db-var-select" class="form-control">
+                            <option selected value="call_revenue">Revenue (USD)</option>
+                            <option value="call_duration">Call Time (seconds)</option>
+                            <option value="units_sold">Units Sold</option>
+                        </select>
+                        <label>
+                            <span id="db-dateLabel1">01/01/2019</span> to
+                            <span id="db-dateLabel2">12/10/2019</span>
+                        </label>
                     </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <select id="db-var-select" class="form-control">
-                                <option selected value="call_revenue">Revenue (USD)</option>
-                                <option value="call_duration">Call Time (seconds)</option>
-                                <option value="units_sold">Units Sold</option>
-                            </select>
-                        </div>
-                    </div>
+
                     <div><svg id="db-stacked-area"></svg></div>
                     <div><svg id="db-timeline"></svg></div>
                 </div>
-                <div id="db-right-charts" class="col-md-4 col-sm-12">
-                    <div class="row">
-                        <div class="col-sm-6 col-md-12" id="company-size"></div>
-                        <div class="col-sm-6 col-md-12" id="units-sold"></div>
-                        <div class="col-sm-6 col-md-12" id="revenue"></div>
-                        <div class="col-sm-6 col-md-12" id="call-duration"></div>
+                <div id="db-right-charts" class="">
+                    <div class="">
+                        <div class="">
+                            <svg id="db-company-size" width="300" height="150"></svg>
+                        </div>
+                        <div class="">
+                            <svg id="db-units-sold" width="300" height="150"></svg>
+                        </div>
+                        <div class="">
+                            <svg id="db-revenue" width="300" height="150"></svg>
+                        </div>
+                        <div class="">
+                            <svg id="db-call-duration" width="300" height="150"></svg>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,7 +1,6 @@
 class StackedAreaChart {
     constructor(parentElement) {
         this.parentElement = parentElement;
-
         this.initVis();
     }
 

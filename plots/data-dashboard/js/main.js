@@ -1,11 +1,12 @@
 //Globals
 const CHART_MARGIN = { top: 50, right: 20, bottom: 40, left: 60 };
-const CHART_WIDTH = 750 - CHART_MARGIN.left - CHART_MARGIN.right;
-const CHART_HEIGHT = 450 - CHART_MARGIN.top - CHART_MARGIN.bottom;
+const CHART_WIDTH = 800 - CHART_MARGIN.left - CHART_MARGIN.right;
+const CHART_HEIGHT = 460 - CHART_MARGIN.top - CHART_MARGIN.bottom;
 const parseDate = d3.timeParse('%d/%m/%Y');
 let stackedAreaChart;
 let brushZone;
 let donutChart;
+let barChartUnits;
 let barChartRevenue;
 let barChartDuration;
 
@@ -25,9 +26,6 @@ db_data.forEach(d => {
 });
 
 // data by day (for stacked chart)
-let avgCallRevenue = [];
-let avgCallDuration = [];
-let avgUnitsSold = [];
 let totalRevenue = [];
 let totalDuration = [];
 let totalUnits = [];
@@ -45,23 +43,16 @@ const calcDataForStackChart = data => {
         const mwCalls = callsOnGivenDay.filter(d => d.team === 'midwest');
         const neCalls = callsOnGivenDay.filter(d => d.team === 'northeast');
 
-        function calc(desired = 'total', metric, array) {
+        function calc(metric, array) {
             let westAvg;
             let southAvg;
             let midwestAvg;
             let neAvg;
 
-            if (desired === 'average') {
-                westAvg = d3.sum(westCalls.map(d => d[metric])) / westCalls.length;
-                southAvg = d3.sum(sCalls.map(d => d[metric])) / sCalls.length;
-                midwestAvg = d3.sum(mwCalls.map(d => d[metric])) / mwCalls.length;
-                neAvg = d3.sum(neCalls.map(d => d[metric])) / neCalls.length;
-            } else {
-                westAvg = d3.sum(westCalls.map(d => d[metric]));
-                southAvg = d3.sum(sCalls.map(d => d[metric]));
-                midwestAvg = d3.sum(mwCalls.map(d => d[metric]));
-                neAvg = d3.sum(neCalls.map(d => d[metric]));
-            }
+            westAvg = d3.sum(westCalls.map(d => d[metric]));
+            southAvg = d3.sum(sCalls.map(d => d[metric]));
+            midwestAvg = d3.sum(mwCalls.map(d => d[metric]));
+            neAvg = d3.sum(neCalls.map(d => d[metric]));
 
             array.push({
                 date: new Date(date),
@@ -71,12 +62,10 @@ const calcDataForStackChart = data => {
                 northeast: Number(neAvg.toFixed(2))
             });
         }
-        calc('average', 'call_revenue', avgCallRevenue);
-        calc('average', 'call_duration', avgCallDuration);
-        calc('average', 'units_sold', avgUnitsSold);
-        calc('total', 'call_revenue', totalRevenue);
-        calc('total', 'call_duration', totalDuration);
-        calc('total', 'units_sold', totalUnits);
+
+        calc('call_revenue', totalRevenue);
+        calc('call_duration', totalDuration);
+        calc('units_sold', totalUnits);
     });
 };
 calcDataForStackChart(db_data);
@@ -100,7 +89,21 @@ const brushMove = () => {
 stackedAreaChart = new StackedAreaChart('#db-stacked-area');
 brushZone = new TimeLine('#db-timeline');
 
+donutChart = new DonutChart1('#db-company-size');
+
+barChartUnits = new BarChart('#db-units-sold', 'Units Sold Per Call', 'units_sold');
+barChartRevenue = new BarChart('#db-revenue', 'Average Call Revenue (USD)', 'call_revenue');
+barChartDuration = new BarChart(
+    '#db-call-duration',
+    'Average Call Duration (seconds)',
+    'call_duration'
+);
+
 const updateAllVis = () => {
     stackedAreaChart.wrangleData(brushDates);
     brushZone.wrangleData();
+    barChartUnits.wrangleData(brushDates);
+    barChartRevenue.wrangleData(brushDates);
+    barChartDuration.wrangleData(brushDates);
+    donutChart.wrangleData(brushDates);
 };

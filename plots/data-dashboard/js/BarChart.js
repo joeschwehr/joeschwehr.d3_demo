@@ -1,44 +1,114 @@
-// var svg = d3.select("svg"),
-//     margin = {top: 20, right: 20, bottom: 30, left: 40},
-//     width = +svg.attr("width") - margin.left - margin.right,
-//     height = +svg.attr("height") - margin.top - margin.bottom;
+class BarChart {
+    constructor(parentElement, title, specifier) {
+        this.data = db_data;
+        this.parentElement = parentElement;
+        this.title = title;
+        this.specifier = specifier;
+        this.initVis();
+    }
 
-// var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
-//     y = d3.scaleLinear().rangeRound([height, 0]);
+    initVis() {
+        let vis = this;
 
-// var g = svg.append("g")
-//     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        // SVG
+        vis.svg = d3.select(vis.parentElement);
 
-// d3.tsv("data.tsv").then(function(d) {
-//   d.frequency = +d.frequency;
-//   return d;
-// }, function(error, data) {
-//   if (error) throw error;
+        // MARGINS
+        vis.margin = { top: 35, right: 10, bottom: 25, left: 35 };
+        vis.width = +vis.svg.attr('width') - vis.margin.left - vis.margin.right;
+        vis.height = +vis.svg.attr('height') - vis.margin.top - vis.margin.bottom;
 
-//   x.domain(data.map(function(d) { return d.letter; }));
-//   y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
+        // G
+        vis.g = vis.svg
+            .append('g')
+            .attr('transform', 'translate(' + vis.margin.left + ',' + vis.margin.top + ')');
 
-//   g.append("g")
-//       .attr("class", "axis axis--x")
-//       .attr("transform", "translate(0," + height + ")")
-//       .call(d3.axisBottom(x));
+        // SCALES
+        vis.x = d3
+            .scaleBand()
+            .domain(['electronics', 'furniture', 'appliances', 'materials'])
+            .range([0, vis.width])
+            .padding(0.5);
 
-//   g.append("g")
-//       .attr("class", "axis axis--y")
-//       .call(d3.axisLeft(y).ticks(10, "%"))
-//     .append("text")
-//       .attr("transform", "rotate(-90)")
-//       .attr("y", 6)
-//       .attr("dy", "0.71em")
-//       .attr("text-anchor", "end")
-//       .text("Frequency");
+        vis.y = d3.scaleLinear().range([vis.height, 0]);
 
-//   g.selectAll(".bar")
-//     .data(data)
-//     .enter().append("rect")
-//       .attr("class", "bar")
-//       .attr("x", function(d) { return x(d.letter); })
-//       .attr("y", function(d) { return y(d.frequency); })
-//       .attr("width", x.bandwidth())
-//       .attr("height", function(d) { return height - y(d.frequency); });
-// });
+        // TITLE
+        vis.g
+            .append('text')
+            .attr('x', -25)
+            .attr('y', -15)
+            .attr('text-anchor', 'start')
+            .text(vis.title);
+
+        // AXIS
+        vis.yAxis = vis.g.append('g').attr('class', 'db-axis');
+        vis.xAxis = vis.g
+            .append('g')
+            .attr('class', 'db-axis')
+            .call(d3.axisBottom(vis.x))
+            .attr('transform', `translate(0, ${vis.height})`)
+            .style('text-transform', 'capitalize');
+
+        this.wrangleData();
+    }
+
+    wrangleData(brushDates = d3.extent(db_data, d => d.date)) {
+        let vis = this;
+
+        // FILTER BASED ON BRUSH SELECTIONS
+        vis.filteredData = vis.data.filter(d => {
+            return (
+                d.date.getTime() >= brushDates[0].getTime() &&
+                d.date.getTime() <= brushDates[1].getTime()
+            );
+        });
+
+        // create new object via nest
+        vis.callNest = d3
+            .nest()
+            .key(d => d.category)
+            .entries(vis.filteredData);
+
+        vis.sum = vis.callNest.map(call => {
+            return {
+                category: call.key,
+                sum: call.values.reduce((acc, cur) => (acc += cur[vis.specifier]), 0)
+            };
+        });
+
+        vis.sum = vis.sum.map((d, i) => {
+            return (d = { ...d, sum: Math.round(d.sum / vis.callNest[i].values.length) });
+        });
+
+        this.updateVis();
+    }
+
+    updateVis() {
+        let vis = this;
+
+        vis.y.domain([0, d3.max(vis.sum, d => d.sum)]);
+        vis.yAxis.call(d3.axisLeft(vis.y).ticks(4)).attr('y', 6);
+
+        const purples = d3.schemePurples[9];
+
+        // JOIN
+        let bars = vis.g.selectAll('rect').data(vis.sum);
+
+        // EXIT
+        bars.exit().remove();
+
+        // UPDATE
+        bars.attr('x', d => vis.x(d.category))
+            .attr('y', d => vis.y(d.sum))
+            .attr('height', d => vis.height - vis.y(d.sum));
+
+        // ENTER
+        bars.enter()
+            .append('rect')
+            .attr('x', d => vis.x(d.category))
+            .attr('y', d => vis.y(d.sum))
+            .attr('width', vis.x.bandwidth())
+            .attr('height', d => vis.height - vis.y(d.sum))
+            .attr('fill', (d, i) => purples[i + 4]);
+    }
+}

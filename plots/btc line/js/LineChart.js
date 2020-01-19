@@ -31,7 +31,7 @@ class LineChart {
             .attr('class', 'btc-line')
             .attr('fill', 'none')
             .attr('stroke', 'grey')
-            .attr('stroke-with', '1.5px');
+            .attr('stroke-width', '1.5px');
 
         // Y-Axis label
         this.yAxis = this.g.append('g').attr('class', 'btc-axis');
@@ -186,7 +186,7 @@ class LineChart {
                 .style('opacity', 1)
                 .style('transform', 'scale(1)')
                 .style('left', `${d3.event.x + 23}px`)
-                .style('top', `${vis.y(d[vis.varSelectorValue]) + 849}px`)
+                .style('top', `${vis.y(d[vis.varSelectorValue]) + 853}px`)
                 .html(
                     `<h4>$${formatOutput(d[vis.varSelectorValue])}</h4><span>${formatTime(
                         d.date

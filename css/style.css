@@ -94,6 +94,27 @@ svg {
     margin-top: 10px;
 }
 
+.db-selection-area {
+    display: flex;
+    align-items: center;
+}
+
+.db-selection-area label {
+    margin-left: 10px;
+}
+
+#db-left-charts {
+    margin-right: 5px;
+}
+
+.dashboard {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
 .db-axis {
     font: 10px sans-serif;
 }
@@ -319,7 +340,7 @@ input:focus {
     stroke-dasharray: 15, 5;
 }
 
-path {
+.btc-donut-charts path {
     z-index: 10;
     cursor: pointer;
 }

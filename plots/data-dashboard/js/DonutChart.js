@@ -1,157 +1,182 @@
-// DonutChart = function(_parentElement, _variable) {
-//     this.parentElement = _parentElement;
-//     this.variable = _variable;
+class DonutChart1 {
+    constructor(parentElement) {
+        this.parentElement = parentElement;
+        this.data = db_data;
+        this.initVis();
+    }
 
-//     this.initVis();
-// };
+    initVis() {
+        let vis = this;
 
-// DonutChart.prototype.initVis = function() {
-//     var vis = this;
+        // SVG
+        vis.svg = d3.select(vis.parentElement);
 
-//     vis.margin = { left: 0, right: 0, top: 40, bottom: 0 };
-//     vis.width = 250 - vis.margin.left - vis.margin.right;
-//     vis.height = 250 - vis.margin.top - vis.margin.bottom;
-//     vis.radius = Math.min(vis.width, vis.height) / 2;
+        // Dimensions
+        vis.width = +vis.svg.attr('width');
+        vis.height = +vis.svg.attr('height');
+        // vis.radius = Math.min(vis.width, vis.height) / 2;
+        vis.radius = 80;
 
-//     vis.pie = d3
-//         .pie()
-//         .padAngle(0.03)
-//         .value(function(d) {
-//             return d.data[vis.variable];
-//         })
-//         .sort(null);
+        // G
+        vis.g = vis.svg
+            .append('g')
+            .attr('transform', `translate(${vis.width / 2 - 60}, ${vis.height / 2 + 10})`);
 
-//     vis.arc = d3
-//         .arc()
-//         .innerRadius(vis.radius - 60)
-//         .outerRadius(vis.radius - 30);
+        // TITLE
+        vis.svg
+            .append('text')
+            .attr('x', 10)
+            .attr('y', 20)
+            .attr('text-anchor', 'start')
+            .text('Company Size');
 
-//     vis.svg = d3
-//         .select(vis.parentElement)
-//         .append('svg')
-//         .attr('width', vis.width + vis.margin.left + vis.margin.right)
-//         .attr('height', vis.height + vis.margin.top + vis.margin.bottom);
+        vis.pie = d3
+            .pie()
+            .padAngle(0.01)
+            .value(d => d.total)
+            .sort(null);
 
-//     vis.g = vis.svg
-//         .append('g')
-//         .attr(
-//             'transform',
-//             'translate(' +
-//                 (vis.margin.left + vis.width / 2) +
-//                 ', ' +
-//                 (vis.margin.top + vis.height / 2) +
-//                 ')'
-//         );
+        vis.arc = d3
+            .arc()
+            .innerRadius(vis.radius - 50)
+            .outerRadius(vis.radius - 30);
 
-//     vis.g
-//         .append('text')
-//         .attr('y', -vis.height / 2)
-//         .attr('x', -vis.width / 2)
-//         .attr('font-size', '15px')
-//         .attr('text-anchor', 'start')
-//         .text(vis.variable == 'market_cap' ? 'Market Capitalization' : '24 Hour Trading Volume');
+        this.wrangleData();
+    }
 
-//     vis.wrangleData();
-// };
+    wrangleData(brushDates = d3.extent(db_data, d => d.date)) {
+        let vis = this;
 
-// DonutChart.prototype.wrangleData = function() {
-//     var vis = this;
+        // FILTER BASED ON BRUSH SELECTIONS
+        vis.filteredData = vis.data.filter(d => {
+            return (
+                d.date.getTime() >= brushDates[0].getTime() &&
+                d.date.getTime() <= brushDates[1].getTime()
+            );
+        });
 
-//     vis.activeCoin = $('#coin-select').val();
+        // create new object via nest
+        vis.callNest = d3
+            .nest()
+            .key(d => d.company_size)
+            .entries(vis.filteredData);
 
-//     vis.updateVis();
-// };
+        vis.total = vis.callNest.map((call, i) => {
+            return {
+                size: call.key,
+                total: vis.callNest[i].values.length
+            };
+        });
+        this.updateVis();
+    }
 
-// DonutChart.prototype.updateVis = function() {
-//     var vis = this;
+    updateVis() {
+        let vis = this;
+        const blues = d3.schemeBlues[3];
+        vis.color = d3.scaleOrdinal().range(blues);
 
-//     vis.path = vis.g.selectAll('path');
+        // LEGEND
+        vis.legend = vis.svg
+            .selectAll('.db-pie-legend')
+            .data(['small', 'medium', 'large'])
+            .enter()
+            .append('g')
+            .attr('class', 'db-pie-legend');
 
-//     vis.data0 = vis.path.data();
-//     vis.data1 = vis.pie(donutData);
+        vis.legend
+            .append('rect')
+            .attr('width', 15)
+            .attr('height', 15)
+            .attr('fill', d => vis.color(d))
+            .attr('stroke', 'rgba(200,200,200,1)')
+            .attr('stroke-width', 0.3)
+            .attr('x', 175)
+            .attr('y', (d, i) => 50 + i * 30);
 
-//     // JOIN elements with new data.
-//     vis.path = vis.path.data(vis.data1, key);
+        vis.legend
+            .append('text')
+            .attr('x', 200)
+            .attr('y', (d, i) => 62 + i * 30)
+            .style('text-transform', 'Capitalize')
+            .text(d => d);
 
-//     // EXIT old elements from the screen.
-//     vis.path
-//         .exit()
-//         .datum(function(d, i) {
-//             return findNeighborArc(i, vis.data1, vis.data0, key) || d;
-//         })
-//         .transition()
-//         .duration(750)
-//         .attrTween('d', arcTween)
-//         .remove();
+        vis.path = vis.g.selectAll('path');
+        vis.data0 = vis.path.data();
+        vis.data1 = vis.pie(vis.total);
 
-//     // UPDATE elements still on the screen.
-//     vis.path
-//         .transition()
-//         .duration(750)
-//         .attrTween('d', arcTween)
-//         .attr('fill-opacity', function(d) {
-//             return d.data.coin == vis.activeCoin ? 1 : 0.3;
-//         });
+        // JOIN elements with new data.
+        vis.path = vis.path.data(vis.data1, key);
 
-//     // ENTER new elements in the array.
-//     vis.path
-//         .enter()
-//         .append('path')
-//         .each(function(d, i) {
-//             this._current = findNeighborArc(i, vis.data0, vis.data1, key) || d;
-//         })
-//         .attr('fill', function(d) {
-//             return color(d.data.coin);
-//         })
-//         .attr('fill-opacity', function(d) {
-//             return d.data.coin == vis.activeCoin ? 1 : 0.3;
-//         })
-//         .on('click', arcClicked)
-//         .transition()
-//         .duration(750)
-//         .attrTween('d', arcTween);
+        // EXIT old elements from the screen.
+        vis.path
+            .exit()
+            .datum((d, i) => findNeighborArc(i, vis.data1, vis.data0, key) || d)
+            .transition()
+            .duration(750)
+            .attrTween('d', arcTween)
+            .remove();
 
-//     function key(d) {
-//         return d.data.coin;
-//     }
+        // UPDATE elements still on the screen.
+        vis.path
+            .transition()
+            .duration(750)
+            .attrTween('d', arcTween);
 
-//     function findNeighborArc(i, data0, data1, key) {
-//         var d;
-//         return (d = findPreceding(i, vis.data0, vis.data1, key))
-//             ? { startAngle: d.endAngle, endAngle: d.endAngle }
-//             : (d = findFollowing(i, vis.data0, vis.data1, key))
-//             ? { startAngle: d.startAngle, endAngle: d.startAngle }
-//             : null;
-//     }
+        // ENTER new elements in the array.
+        vis.path
+            .enter()
+            .append('path')
+            .each(function(d, i) {
+                this._current = findNeighborArc(i, vis.data0, vis.data1, key) || d;
+            })
+            .attr('fill', d => vis.color(d.data.size))
+            .transition()
+            .duration(750)
+            .attrTween('d', arcTween);
 
-//     // Find the element in data0 that joins the highest preceding element in data1.
-//     function findPreceding(i, data0, data1, key) {
-//         var m = vis.data0.length;
-//         while (--i >= 0) {
-//             var k = key(vis.data1[i]);
-//             for (var j = 0; j < m; ++j) {
-//                 if (key(vis.data0[j]) === k) return vis.data0[j];
-//             }
-//         }
-//     }
+        // ****************************** Pie Functions ****************************** //
+        function findNeighborArc(i, data0, data1, key) {
+            let d;
+            return (d = findPreceding(i, vis.data0, vis.data1, key))
+                ? { startAngle: d.endAngle, endAngle: d.endAngle }
+                : (d = findFollowing(i, vis.data0, vis.data1, key))
+                ? { startAngle: d.startAngle, endAngle: d.startAngle }
+                : null;
+        }
 
-//     // Find the element in data0 that joins the lowest following element in data1.
-//     function findFollowing(i, data0, data1, key) {
-//         var n = vis.data1.length,
-//             m = vis.data0.length;
-//         while (++i < n) {
-//             var k = key(vis.data1[i]);
-//             for (var j = 0; j < m; ++j) {
-//                 if (key(vis.data0[j]) === k) return vis.data0[j];
-//             }
-//         }
-//     }
+        // Find the element in data0 that joins the highest preceding element in data1.
+        function findPreceding(i, data0, data1, key) {
+            let m = vis.data0.length;
+            while (--i >= 0) {
+                let k = key(vis.data1[i]);
+                for (let j = 0; j < m; ++j) {
+                    if (key(vis.data0[j]) === k) return vis.data0[j];
+                }
+            }
+        }
 
-//     function arcTween(d) {
-//         var i = d3.interpolate(this._current, d);
-//         this._current = i(1);
-//         return function(t) {
-//             return vis.arc(i(t));
-//         };
-//     }
-// };
+        // Find the element in data0 that joins the lowest following element in data1.
+        function findFollowing(i, data0, data1, key) {
+            let n = vis.data1.length,
+                m = vis.data0.length;
+            while (++i < n) {
+                let k = key(vis.data1[i]);
+                for (let j = 0; j < m; ++j) {
+                    if (key(vis.data0[j]) === k) return vis.data0[j];
+                }
+            }
+        }
+
+        function arcTween(d) {
+            let i = d3.interpolate(this._current, d);
+            this._current = i(1);
+            return function(t) {
+                return vis.arc(i(t));
+            };
+        }
+
+        function key(d) {
+            return d.data.size;
+        }
+    }
+}
