@@ -35,7 +35,11 @@ class DonutChart1 {
             .padAngle(0.01)
             .value(d => d.total)
             .sort((a, b) => {
-                if (a.size < b.size) return -1;
+                if (a.size < b.size) {
+                    return -1;
+                } else if (a.size > b.size) {
+                    return +1;
+                } else return a.total - b.total;
             });
 
         vis.arc = d3
@@ -178,7 +182,7 @@ class DonutChart1 {
         }
 
         function key(d) {
-            if (d) return d.data.size;
+            return d.data.size;
         }
     }
 }
