@@ -24,9 +24,10 @@ class BarChart {
             .attr('transform', 'translate(' + vis.margin.left + ',' + vis.margin.top + ')');
 
         // SCALES
+        vis.categories = ['electronics', 'furniture', 'appliances', 'materials'];
         vis.x = d3
             .scaleBand()
-            .domain(['electronics', 'furniture', 'appliances', 'materials'])
+            .domain(vis.categories)
             .range([0, vis.width])
             .padding(0.5);
 
@@ -89,7 +90,11 @@ class BarChart {
         vis.y.domain([0, d3.max(vis.sum, d => d.sum)]);
         vis.yAxis.call(d3.axisLeft(vis.y).ticks(4)).attr('y', 6);
 
-        const purples = d3.schemePurples[9];
+        const purples = d3.schemePurples[5].slice(1, 5);
+        vis.color = d3
+            .scaleOrdinal()
+            .domain(vis.categories)
+            .range(purples);
 
         // JOIN
         let bars = vis.g.selectAll('rect').data(vis.sum);
@@ -100,7 +105,8 @@ class BarChart {
         // UPDATE
         bars.attr('x', d => vis.x(d.category))
             .attr('y', d => vis.y(d.sum))
-            .attr('height', d => vis.height - vis.y(d.sum));
+            .attr('height', d => vis.height - vis.y(d.sum))
+            .attr('fill', d => vis.color(d.category));
 
         // ENTER
         bars.enter()
@@ -109,6 +115,7 @@ class BarChart {
             .attr('y', d => vis.y(d.sum))
             .attr('width', vis.x.bandwidth())
             .attr('height', d => vis.height - vis.y(d.sum))
-            .attr('fill', (d, i) => purples[i + 4]);
+            // .attr('fill', (d, i) => purples[i])
+            .attr('fill', d => vis.color(d.category));
     }
 }

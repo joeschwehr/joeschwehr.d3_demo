@@ -178,7 +178,7 @@ class DonutChart1 {
         }
 
         function key(d) {
-            if (d.data) return d.data.size;
+            if (d) return d.data.size;
         }
     }
 }
