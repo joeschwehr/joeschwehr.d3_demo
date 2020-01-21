@@ -103,19 +103,19 @@ class BarChart {
         bars.exit().remove();
 
         // UPDATE
-        bars.attr('x', d => vis.x(d.category))
+        bars.attr('fill', d => vis.color(d.category))
+            .attr('x', d => vis.x(d.category))
             .attr('y', d => vis.y(d.sum))
-            .attr('height', d => vis.height - vis.y(d.sum))
-            .attr('fill', d => vis.color(d.category));
+            .attr('height', d => vis.height - vis.y(d.sum));
 
         // ENTER
         bars.enter()
             .append('rect')
+            .attr('fill', d => vis.color(d.category))
+            .attr('width', vis.x.bandwidth())
             .attr('x', d => vis.x(d.category))
             .attr('y', d => vis.y(d.sum))
-            .attr('width', vis.x.bandwidth())
-            .attr('height', d => vis.height - vis.y(d.sum))
-            // .attr('fill', (d, i) => purples[i])
-            .attr('fill', d => vis.color(d.category));
+            .attr('height', d => vis.height - vis.y(d.sum));
+        // .attr('fill', (d, i) => purples[i])
     }
 }

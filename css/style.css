@@ -305,7 +305,7 @@ input:focus {
     outline: none;
 }
 
-/* plot 3 */
+/************** plot 3 **************/
 .svg-two {
     margin: 0 auto;
     display: block;
@@ -334,7 +334,43 @@ input:focus {
     stroke-dasharray: 15, 5;
 }
 
-/* Scatter Plot */
+/************* DOUBLE PIE **************/
+/* body {
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 20px;
+}*/
+
+.row-double-pie {
+    position: relative; /* YES! */
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+}
+
+#double-pie-chart {
+    margin: 0 auto;
+    display: block;
+}
+
+.row-double-pie input {
+    margin-top: 15px;
+    max-width: 400px;
+    min-width: 250px;
+}
+
+.double-pie-tooltip {
+    opacity: 0;
+    position: fixed; /* YES! */
+    pointer-events: none;
+}
+
+.double-pie-tooltip p {
+    background-color: rgba(88, 99, 109, 0.678);
+    padding: 5px;
+    border-radius: 4px;
+    color: white;
+}
+/************** Scatter Plot **************/
 .svg-four .tick line {
     stroke: rgb(240, 240, 240);
     stroke-dasharray: 15, 5;

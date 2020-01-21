@@ -144,10 +144,14 @@
                 <div id="gapminder"></div>
             </div>
             <hr />
+
+            <!-- Moving Bar Chart -->
             <div class="row row-two">
                 <div id="chart-area"></div>
             </div>
             <hr />
+
+            <!-- Interactive Hist -->
             <div class="row row-two">
                 <svg
                     class="svg-two"
@@ -161,6 +165,8 @@
                 </div>
             </div>
             <hr />
+
+            <!-- Returns Bar Plot -->
             <div class="row row-three">
                 <svg
                     class="svg-three"
@@ -173,6 +179,21 @@
                 </div>
             </div>
             <hr />
+
+            <!-- Returns Donut & Pie -->
+            <div class="row row-double-pie">
+                <div class="double-pie-tooltip"></div>
+                <svg
+                    id="double-pie-chart"
+                    version="1.1"
+                    baseProfile="full"
+                    xmlns="http://www.w3.org/2000/svg"
+                ></svg>
+                <input id="double-pie-input" type="range" value="0" />
+            </div>
+            <hr />
+
+            <!-- Scatter Plot -->
             <div class="row row-four">
                 <svg
                     class="svg-four"
@@ -221,6 +242,9 @@
         <!-- Transition and Delay Hist -->
         <script src="plots/d3-and-svg/birthData.js"></script>
         <script src="plots/d3-and-svg/app.js"></script>
+
+        <!-- Double Pie -->
+        <script src="plots/double-pie/app.js"></script>
 
         <!-- Scatterplot -->
         <script src="plots/scatterplot-exercise/app.js"></script>
